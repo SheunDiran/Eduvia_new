@@ -1,0 +1,8 @@
+{
+  "name": "Eduvia",
+  "description": "AI-powered learning platform for high school students with curated 3-video topic playlists, Eduvia AI misconception diagnosis, timed tests, and student productivity tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

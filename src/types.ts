@@ -10,13 +10,17 @@ export type GradeLevel =
   | 'grade-9'
   | 'grade-10'
   | 'grade-11'
-  | 'grade-12';
+  | 'grade-12'
+  | 'uni-freshman'
+  | 'uni-sophomore'
+  | 'uni-junior'
+  | 'uni-senior';
 
 export interface GradeInfo {
   id: GradeLevel;
   number: number;
   label: string;
-  stage: 'Primary / Elementary' | 'Junior Secondary / Middle' | 'Senior Secondary / High School';
+  stage: 'Primary / Elementary' | 'Junior Secondary / Middle' | 'Senior Secondary / High School' | 'Higher Education / University';
   description: string;
 }
 
@@ -48,17 +52,64 @@ export type SubjectId =
   | 'further-math'
   | 'accounting'
   | 'commerce'
-  | 'economics';
+  | 'economics'
+  | 'data-structures'
+  | 'organic-chemistry'
+  | 'linear-algebra'
+  | 'neuroscience'
+  | 'macroeconomics';
 
-export type SubjectCategory = 'All' | 'Sciences' | 'Humanities' | 'Languages' | 'Business & Social' | 'Tech & Applied';
+export type SubjectCategory = 'All' | 'Sciences' | 'Humanities' | 'Languages' | 'Business & Social' | 'Tech & Applied' | 'University & Advanced';
 
 export interface Subject {
   id: SubjectId;
   name: string;
   iconName: string;
   shortDesc: string;
-  category: 'Sciences' | 'Humanities' | 'Languages' | 'Business & Social' | 'Tech & Applied';
+  category: 'Sciences' | 'Humanities' | 'Languages' | 'Business & Social' | 'Tech & Applied' | 'University & Advanced';
   themeColor: string;
+}
+
+export interface BookItem {
+  id: string;
+  title: string;
+  author: string;
+  coverUrl?: string;
+  year?: number | string;
+  genre: string;
+  description: string;
+  chaptersCount?: number;
+  fullTextAvailable?: boolean;
+  sampleChapterText?: string;
+}
+
+export interface BookChapterSummary {
+  chapterNumber: number;
+  title: string;
+  keyEvents: string[];
+  coreThemes: string[];
+  examCheatSheet: string;
+  anticipatedQuizQuestions: {
+    question: string;
+    answer: string;
+  }[];
+}
+
+export interface BrainFeedCard {
+  id: string;
+  title: string;
+  category: 'Physics & Space' | 'Neuroscience & Psychology' | 'Calculus & Math' | 'Economics & Philosophy' | 'CS & AI' | 'Literature & History';
+  readTime: string;
+  hook: string;
+  coreInsight: string;
+  realWorldAnalogy: string;
+  quickCheck: {
+    question: string;
+    options: string[];
+    correctIndex: number;
+    explanation: string;
+  };
+  takeaway: string;
 }
 
 export interface YouTubeVideo {

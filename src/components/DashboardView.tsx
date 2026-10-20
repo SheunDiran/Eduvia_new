@@ -12,7 +12,10 @@ import {
   Calendar,
   Layers,
   GraduationCap,
-  Bookmark
+  Bookmark,
+  Camera,
+  Flame,
+  Volume2
 } from 'lucide-react';
 import { GradeLevel, Subject, SubjectId, TaskItem, UserProfile } from '../types';
 import { getSubjectsForGrade } from '../data/subjects';
@@ -35,6 +38,7 @@ interface DashboardViewProps {
   onLaunchTimedTest?: (subjectId: SubjectId) => void;
   onChangeGrade?: (grade: GradeLevel) => void;
   onOpenEduviaAI?: () => void;
+  onOpenPhotoSolver?: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -44,7 +48,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onSelectSubject,
   onLaunchTimedTest,
   onChangeGrade,
-  onOpenEduviaAI
+  onOpenEduviaAI,
+  onOpenPhotoSolver
 }) => {
   const navigate = onNavigate || onNavigateTab || (() => {});
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -128,23 +133,127 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </button>
             <button
               type="button"
-              id="btn-dash-subjects"
-              onClick={() => navigate('subjects')}
-              className="px-4 py-2.5 bg-white text-purple-800 hover:bg-purple-50 font-semibold rounded-xl text-sm transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+              id="btn-dash-snap-photo"
+              onClick={onOpenPhotoSolver}
+              className="px-4 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-95"
             >
-              <BookOpen className="w-4 h-4 text-purple-700" />
-              <span>Browse 15 Subjects</span>
+              <Camera className="w-4 h-4 text-slate-950" />
+              <span>Snap Homework</span>
             </button>
             <button
               type="button"
-              id="btn-dash-test"
-              onClick={() => navigate('test')}
-              className="px-4 py-2.5 bg-purple-600/60 hover:bg-purple-600/90 border border-white/20 text-white font-semibold rounded-xl text-sm transition-all flex items-center gap-2 cursor-pointer"
+              id="btn-dash-read"
+              onClick={() => navigate('read')}
+              className="px-4 py-2.5 bg-white text-purple-800 hover:bg-purple-50 font-bold rounded-xl text-sm transition-all shadow-sm flex items-center gap-2 cursor-pointer"
             >
-              <Timer className="w-4 h-4" />
-              <span>60-Min Timed Test</span>
+              <BookOpen className="w-4 h-4 text-purple-700" />
+              <span>Read Any Book</span>
+            </button>
+            <button
+              type="button"
+              id="btn-dash-brainfeed"
+              onClick={() => navigate('brainfeed')}
+              className="px-4 py-2.5 bg-purple-600/70 hover:bg-purple-600/90 border border-white/20 text-white font-bold rounded-xl text-sm transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Flame className="w-4 h-4 text-amber-300" />
+              <span>EduScroll Bites</span>
+            </button>
+            <button
+              type="button"
+              id="btn-dash-subjects"
+              onClick={() => navigate('subjects')}
+              className="px-4 py-2.5 bg-purple-900/40 hover:bg-purple-900/60 border border-white/10 text-purple-100 font-semibold rounded-xl text-sm transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span>Subjects</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Flagship Hackathon Feature Showcase */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        {/* Feature 1: Snap Photo Solver */}
+        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/30 p-5 rounded-2xl border border-purple-200 dark:border-purple-800/60 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-xs">
+                <Camera className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-200 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
+                Multimodal AI
+              </span>
+            </div>
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-white font-['Outfit'] mb-1">
+              Snap Homework Problem
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+              Take a photo of any math equation, science diagram, or textbook exercise. Eduvia AI extracts the prompt, shows step-by-step derivation, and diagnoses common trap mistakes.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onOpenPhotoSolver}
+            className="w-full py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+          >
+            <span>Snap or Upload Problem</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Feature 2: Books Reader & Audio */}
+        <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/40 dark:to-blue-950/30 p-5 rounded-2xl border border-indigo-200 dark:border-indigo-800/60 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-200 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
+                Audio & Quiz Prep
+              </span>
+            </div>
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-white font-['Outfit'] mb-1">
+              Read Any Book in the World
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+              Search millions of books, listen with AI text-to-speech audio narration, and get chapter deep summaries with anticipated quiz answers so you ace every exam.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('read')}
+            className="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+          >
+            <span>Explore Books & Audio</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Feature 3: EduScroll (Brain Bites) */}
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30 p-5 rounded-2xl border border-amber-200 dark:border-amber-800/60 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center shadow-xs">
+                <Flame className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200">
+                Brain Bites
+              </span>
+            </div>
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-white font-['Outfit'] mb-1">
+              EduScroll: Educated Doom Scrolling
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+              Replace mindless scrolling with high-yield 60-second micro-learning cards, counterintuitive science paradoxes, and quick interactive 10-second quiz polls.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('brainfeed')}
+            className="w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+          >
+            <span>Start EduScrolling</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 

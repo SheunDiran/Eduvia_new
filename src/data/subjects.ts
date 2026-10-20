@@ -224,6 +224,46 @@ export const ALL_SUBJECTS_MAP: Record<SubjectId, Subject> = {
     shortDesc: 'Micro and macroeconomic principles, market structures, price mechanisms, and development.',
     category: 'Business & Social',
     themeColor: '#0D9488'
+  },
+  'data-structures': {
+    id: 'data-structures',
+    name: 'Data Structures & Algorithms',
+    iconName: 'Cpu',
+    shortDesc: 'Trees, graphs, dynamic programming, asymptotic analysis, memory allocation, and complexity.',
+    category: 'University & Advanced',
+    themeColor: '#2563EB'
+  },
+  'organic-chemistry': {
+    id: 'organic-chemistry',
+    name: 'Organic Chemistry & BioChem',
+    iconName: 'Atom',
+    shortDesc: 'Reaction mechanisms, SN1/SN2 kinetics, stereochemistry, synthesis pathways, and biomolecules.',
+    category: 'University & Advanced',
+    themeColor: '#10B981'
+  },
+  'linear-algebra': {
+    id: 'linear-algebra',
+    name: 'Linear Algebra & Calc III',
+    iconName: 'Binary',
+    shortDesc: 'Vector spaces, eigenvalues, matrix transformations, multivariable gradients, and tensor fields.',
+    category: 'University & Advanced',
+    themeColor: '#8B5CF6'
+  },
+  neuroscience: {
+    id: 'neuroscience',
+    name: 'Neuroscience & Psychology',
+    iconName: 'Brain',
+    shortDesc: 'Action potentials, synaptic transmission, cognitive models, neuroplasticity, and memory consolidation.',
+    category: 'University & Advanced',
+    themeColor: '#EC4899'
+  },
+  macroeconomics: {
+    id: 'macroeconomics',
+    name: 'Advanced Macroeconomics',
+    iconName: 'LineChart',
+    shortDesc: 'Fiscal policies, central bank interest models, IS-LM equilibriums, and international trade balance.',
+    category: 'University & Advanced',
+    themeColor: '#F59E0B'
   }
 };
 
@@ -297,6 +337,22 @@ export function getSubjectsForGrade(grade: GradeLevel): Subject[] {
       { ...ALL_SUBJECTS_MAP['art'], name: 'Art' },
       { ...ALL_SUBJECTS_MAP['phe'], name: 'PHE' },
       { ...ALL_SUBJECTS_MAP['crs'], name: 'CRS' }
+    ];
+  }
+
+  // University & Higher Education (Freshman, Sophomore, Junior, Senior)
+  if (grade.startsWith('uni-')) {
+    return [
+      { ...ALL_SUBJECTS_MAP['data-structures'], name: 'Data Structures & Algorithms' },
+      { ...ALL_SUBJECTS_MAP['linear-algebra'], name: 'Linear Algebra & Calc III' },
+      { ...ALL_SUBJECTS_MAP['organic-chemistry'], name: 'Organic Chemistry & BioChem' },
+      { ...ALL_SUBJECTS_MAP['neuroscience'], name: 'Neuroscience & Psychology' },
+      { ...ALL_SUBJECTS_MAP['macroeconomics'], name: 'Advanced Macroeconomics' },
+      { ...ALL_SUBJECTS_MAP['computer-science'], name: 'Systems Architecture & Networking' },
+      { ...ALL_SUBJECTS_MAP['further-math'], name: 'Discrete Math & Probability' },
+      { ...ALL_SUBJECTS_MAP['physics'], name: 'Quantum & Classical Mechanics' },
+      { ...ALL_SUBJECTS_MAP['economics'], name: 'Econometrics & Game Theory' },
+      { ...ALL_SUBJECTS_MAP['english-lit'], name: 'Academic Research & Critical Theory' }
     ];
   }
 

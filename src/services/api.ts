@@ -43,7 +43,27 @@ interface RegisteredAccount {
 function getLocalAccounts(): RegisteredAccount[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.REGISTERED_ACCOUNTS);
-    return raw ? JSON.parse(raw) : [];
+    const existing: RegisteredAccount[] = raw ? JSON.parse(raw) : [];
+    if (!existing.some((a) => a.email.toLowerCase() === 'student@eduvia.org')) {
+      existing.push({
+        id: 'student-demo',
+        name: 'Maya Chen (Demo Student)',
+        email: 'student@eduvia.org',
+        password: 'demo123',
+        grade: 'grade-10',
+        joinedAt: '2026-09-01T08:00:00.000Z'
+      });
+      existing.push({
+        id: 'uni-demo',
+        name: 'Alex Rivera (University Scholar)',
+        email: 'university@eduvia.org',
+        password: 'demo123',
+        grade: 'uni-sophomore',
+        joinedAt: '2026-09-01T08:00:00.000Z'
+      });
+      saveLocalAccounts(existing);
+    }
+    return existing;
   } catch {
     return [];
   }
@@ -79,11 +99,34 @@ export function getStoredUser(): UserProfile | null {
 
 export const getStoredSession = getStoredUser;
 
+export function getRememberedEmail(): string {
+  try {
+    return localStorage.getItem('eduvia_remembered_email') || '';
+  } catch {
+    return '';
+  }
+}
+
+export function getRememberedAccount(): { email: string; name?: string; grade?: GradeLevel } | null {
+  try {
+    const email = localStorage.getItem('eduvia_remembered_email');
+    if (!email) return null;
+    const name = localStorage.getItem('eduvia_remembered_name') || undefined;
+    const grade = (localStorage.getItem('eduvia_remembered_grade') as GradeLevel) || undefined;
+    return { email, name, grade };
+  } catch {
+    return null;
+  }
+}
+
 export function setStoredUser(user: UserProfile | null, token?: string, rememberMe = true) {
   if (user) {
     if (rememberMe) {
       localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
       localStorage.setItem(STORAGE_KEYS.REMEMBER_ME, 'true');
+      localStorage.setItem('eduvia_remembered_email', user.email);
+      localStorage.setItem('eduvia_remembered_name', user.name);
+      if (user.grade) localStorage.setItem('eduvia_remembered_grade', user.grade);
       if (token) localStorage.setItem(STORAGE_KEYS.TOKEN, token);
       sessionStorage.removeItem(STORAGE_KEYS.USER);
       sessionStorage.removeItem(STORAGE_KEYS.TOKEN);
@@ -105,6 +148,36 @@ export function setStoredUser(user: UserProfile | null, token?: string, remember
 
 export function removeStoredSession() {
   setStoredUser(null);
+}
+
+export async function loginDemoUser(type: 'highschool' | 'university' = 'highschool', rememberMe = true): Promise<UserProfile> {
+  const isUni = type === 'university';
+  try {
+    const res = await fetch('/api/auth/demo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user) {
+        setStoredUser(data.user, data.token, rememberMe);
+        return data.user;
+      }
+    }
+  } catch (e) {
+    console.warn('Demo login fetch failed, falling back to local demo profile:', e);
+  }
+
+  const fallbackUser: UserProfile = {
+    id: isUni ? 'uni-demo' : 'student-demo',
+    name: isUni ? 'Alex Rivera (University Scholar)' : 'Maya Chen (Demo Student)',
+    email: isUni ? 'university@eduvia.org' : 'student@eduvia.org',
+    grade: isUni ? 'uni-sophomore' : 'grade-10',
+    joinedAt: '2026-09-01T08:00:00.000Z'
+  };
+  setStoredUser(fallbackUser, 'demo-token-' + fallbackUser.id, rememberMe);
+  return fallbackUser;
 }
 
 export async function loginUser(email: string, password: string, rememberMe = true): Promise<UserProfile> {
@@ -992,6 +1065,19 @@ export async function createNote(note: Omit<NoteItem, 'id' | 'createdAt' | 'upda
   return newNote;
 }
 
+export async function saveNote(
+  userId: string,
+  note: { title: string; content: string; subjectId?: string; topicId?: string }
+): Promise<NoteItem> {
+  return createNote({
+    userId,
+    title: note.title,
+    content: note.content,
+    subjectId: (note.subjectId as SubjectId) || 'math',
+    topicId: note.topicId
+  });
+}
+
 export async function updateNote(
   id: string,
   updates: Partial<Omit<NoteItem, 'id' | 'userId' | 'createdAt'>>,
@@ -1207,5 +1293,60 @@ export async function fetchLiveTopicVideos(
       description: `Mastery review for ${topicTitle}`
     }
   ];
+}
+
+// ================= MULTIMODAL PHOTO SOLVER =================
+
+export async function aiSolvePhoto(params: {
+  imageBase64: string;
+  mimeType?: string;
+  studentNote?: string;
+  subject?: string;
+  grade?: string;
+}): Promise<string> {
+  const res = await fetch('/api/ai/solve-photo', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params)
+  });
+  let data: any = {};
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(`Server returned HTTP ${res.status}`);
+  }
+  if (!res.ok) throw new Error(data.error || 'Failed to analyze homework photo');
+  return data.text;
+}
+
+// ================= GLOBAL BOOKS LIBRARY =================
+
+export async function searchBooks(query: string) {
+  const res = await fetch(`/api/books/search?q=${encodeURIComponent(query)}`);
+  if (!res.ok) throw new Error('Failed to search books');
+  return res.json();
+}
+
+export async function getBookChapterSummary(params: {
+  bookTitle: string;
+  author?: string;
+  chapterNumber: number;
+}) {
+  const res = await fetch('/api/books/summary', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params)
+  });
+  if (!res.ok) throw new Error('Failed to generate chapter summary');
+  return res.json();
+}
+
+// ================= BRAINFEED MICRO-LEARNING =================
+
+export async function fetchBrainFeed(category?: string) {
+  const url = category && category !== 'All' ? `/api/ai/brainfeed?category=${encodeURIComponent(category)}` : '/api/ai/brainfeed';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to load BrainFeed cards');
+  return res.json();
 }
 

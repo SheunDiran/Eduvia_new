@@ -442,5 +442,135 @@ export const SUBJECT_CURATED_VIDEOS: Partial<Record<SubjectId, YouTubeVideo[]>> 
       duration: '08:12',
       description: 'The separation of powers between executive, legislative, and judicial branches.'
     }
+  ],
+  'data-structures': [
+    {
+      id: 'v-ds-1',
+      embedId: 'RBSGKlAnoiM',
+      title: 'Data Structures Easy to Advanced Course - Full Tutorial',
+      channel: 'freeCodeCamp / William Fiset',
+      duration: '18:40',
+      description: 'Asymptotic notation, amortized array lists, singly and doubly linked lists.'
+    },
+    {
+      id: 'v-ds-2',
+      embedId: 'HhTa0XyD6x0',
+      title: 'Binary Search Trees & Tree Traversals',
+      channel: 'Abdul Bari',
+      duration: '14:22',
+      description: 'Depth-first search (Inorder, Preorder, Postorder) and AVL balance factors.'
+    },
+    {
+      id: 'v-ds-3',
+      embedId: 'oDqjPvD54Ss',
+      title: 'Dynamic Programming Foundations (Memoization & Tabulation)',
+      channel: 'NeetCode',
+      duration: '12:50',
+      description: 'Breaking exponential subproblem overlaps into polynomial linear runtime.'
+    }
+  ],
+  'linear-algebra': [
+    {
+      id: 'v-la-1',
+      embedId: 'fNk_zzaMoSs',
+      title: 'Vectors & What They Actually Mean | Essence of Linear Algebra',
+      channel: '3Blue1Brown',
+      duration: '09:50',
+      description: 'Geometric perspective on vectors, linear combinations, and spans.'
+    },
+    {
+      id: 'v-la-2',
+      embedId: 'k7RM-ot2NWY',
+      title: 'Linear Transformations and Matrix Multiplication',
+      channel: '3Blue1Brown',
+      duration: '10:55',
+      description: 'How grid lines remain parallel and evenly spaced during matrix mappings.'
+    },
+    {
+      id: 'v-la-3',
+      embedId: 'PFDu9oVAE-g',
+      title: 'Eigenvectors and Eigenvalues Explained Visually',
+      channel: '3Blue1Brown',
+      duration: '17:15',
+      description: 'Directions invariant under linear transformation with scalar scaling.'
+    }
+  ],
+  'organic-chemistry': [
+    {
+      id: 'v-oc-1',
+      embedId: '792MhU5Z5-M',
+      title: 'SN1 vs SN2 Mechanisms - Reaction Kinetics & Stereochemistry',
+      channel: 'The Organic Chemistry Tutor',
+      duration: '15:20',
+      description: 'Carbocation intermediates, backside nucleophilic attacks, and solvent effects.'
+    },
+    {
+      id: 'v-oc-2',
+      embedId: 'E_hZgQ583r4',
+      title: 'Electrophilic Aromatic Substitution (EAS) Mechanisms',
+      channel: 'Professor Dave Explains',
+      duration: '11:10',
+      description: 'Halogenation, nitration, sulfonation, and Friedel-Crafts alkylation.'
+    },
+    {
+      id: 'v-oc-3',
+      embedId: 'zU2m_r0z4Q4',
+      title: 'Chirality, Enantiomers, and R/S Configuration',
+      channel: 'Leah4sci',
+      duration: '09:40',
+      description: 'Cahn-Ingold-Prelog priority rules and optical activity determination.'
+    }
+  ],
+  neuroscience: [
+    {
+      id: 'v-neuro-1',
+      embedId: 'qPix_X-9t7E',
+      title: 'The Chemical Mind: Crash Course Psychology #3',
+      channel: 'CrashCourse',
+      duration: '10:14',
+      description: 'Neurons, action potentials, resting membrane potential, and synaptic clefts.'
+    },
+    {
+      id: 'v-neuro-2',
+      embedId: 'W4N-7AlzK7s',
+      title: 'Action Potential Generation & Voltage-Gated Channels',
+      channel: 'Khan Academy',
+      duration: '12:30',
+      description: 'Sodium influx, potassium efflux, refractory periods, and saltatory conduction.'
+    },
+    {
+      id: 'v-neuro-3',
+      embedId: '7v2GipkuPD8',
+      title: 'Neuroplasticity & Synaptic Long-Term Potentiation (LTP)',
+      channel: 'Armando Hasudungan',
+      duration: '11:05',
+      description: 'NMDA and AMPA receptor dynamics in hippocampal learning and memory.'
+    }
+  ],
+  macroeconomics: [
+    {
+      id: 'v-macro-1',
+      embedId: 'd8uTB5XorBw',
+      title: 'Macroeconomics- Everything You Need to Know',
+      channel: 'Jacob Clifford',
+      duration: '29:40',
+      description: 'GDP, inflation, unemployment, business cycles, and aggregate supply/demand.'
+    },
+    {
+      id: 'v-macro-2',
+      embedId: '1uxA9W6n-wM',
+      title: 'Monetary and Fiscal Policy: Differences and Trade-Offs',
+      channel: 'CrashCourse Economics',
+      duration: '10:48',
+      description: 'Central bank interest rate manipulation vs government taxation and spending.'
+    },
+    {
+      id: 'v-macro-3',
+      embedId: 'w8G3gK9R5aA',
+      title: 'The Phillips Curve and Inflationary Expectations',
+      channel: 'Marginal Revolution University',
+      duration: '08:20',
+      description: 'Short-run vs long-run trade-off between unemployment and price stability.'
+    }
   ]
 };

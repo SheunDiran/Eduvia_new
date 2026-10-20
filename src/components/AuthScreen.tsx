@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { GradeLevel, UserProfile } from '../types';
 import { GRADES } from '../data/grades';
-import { loginUser, signupUser } from '../services/api';
+import { getRememberedAccount, getRememberedEmail, loginDemoUser, loginUser, signupUser, setStoredUser } from '../services/api';
 
 interface AuthScreenProps {
   onLoginSuccess?: (user: UserProfile) => void;
@@ -21,13 +21,14 @@ interface AuthScreenProps {
 }
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess, onAuthSuccess }) => {
+  const rememberedAccount = getRememberedAccount();
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(() => rememberedAccount?.email || getRememberedEmail());
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-  const [selectedGrade, setSelectedGrade] = useState<GradeLevel>('grade-10');
+  const [selectedGrade, setSelectedGrade] = useState<GradeLevel>(() => rememberedAccount?.grade || 'grade-10');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -37,6 +38,53 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess, onAuthSu
     }
     if (typeof onAuthSuccess === 'function') {
       onAuthSuccess(user);
+    }
+  };
+
+  const handleQuickLoginAsRemembered = async () => {
+    if (!rememberedAccount) return;
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      // Check if demo user
+      if (rememberedAccount.email.includes('student@eduvia.org')) {
+        const u = await loginDemoUser('highschool', true);
+        triggerLoginSuccess(u);
+        return;
+      }
+      if (rememberedAccount.email.includes('university@eduvia.org')) {
+        const u = await loginDemoUser('university', true);
+        triggerLoginSuccess(u);
+        return;
+      }
+
+      // Restore session profile directly
+      const restoredUser: UserProfile = {
+        id: 'user-remembered-' + Date.now(),
+        name: rememberedAccount.name || 'Returning Student',
+        email: rememberedAccount.email,
+        grade: rememberedAccount.grade || 'grade-10',
+        joinedAt: new Date().toISOString()
+      };
+      setStoredUser(restoredUser, 'token-remembered', true);
+      triggerLoginSuccess(restoredUser);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Could not resume session. Please enter password.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleQuickDemo = async (type: 'highschool' | 'university') => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const user = await loginDemoUser(type, true);
+      triggerLoginSuccess(user);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Demo login failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -168,15 +216,79 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess, onAuthSu
               </button>
             </div>
 
-            <div className="mb-6">
+            {/* Remembered Student Banner for Returning Users */}
+            {rememberedAccount && !isSignUp && (
+              <div className="mb-5 p-3.5 bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 rounded-2xl flex items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-2.5 overflow-hidden">
+                  <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    {(rememberedAccount.name || rememberedAccount.email).charAt(0).toUpperCase()}
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
+                      {rememberedAccount.name || 'Saved Account'}
+                    </span>
+                    <span className="text-[10px] text-purple-700 dark:text-purple-300 block truncate">
+                      {rememberedAccount.email}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  id="btn-quick-login-remembered"
+                  onClick={handleQuickLoginAsRemembered}
+                  disabled={isLoading}
+                  className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all shrink-0 cursor-pointer flex items-center gap-1"
+                >
+                  <span>Quick Sign In</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+
+            <div className="mb-4">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white font-['Outfit']">
                 {isSignUp ? 'Join Eduvia Today' : 'Welcome back, Student'}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 {isSignUp
                   ? 'Select your grade level to access your tailored curriculum.'
-                  : 'Enter your student credentials to continue your study sessions.'}
+                  : 'Enter your student credentials or use 1-click demo access below.'}
               </p>
+            </div>
+
+            {/* 1-Click Instant Demo / Judge Mode Buttons */}
+            <div className="mb-5 p-3 rounded-2xl bg-purple-50/60 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/60 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                  Instant Access for Judges & Students
+                </span>
+                <span className="text-[10px] font-semibold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full">
+                  1-Click
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  id="btn-demo-highschool"
+                  onClick={() => handleQuickDemo('highschool')}
+                  disabled={isLoading}
+                  className="py-2 px-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
+                >
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  <span>High School Demo</span>
+                </button>
+                <button
+                  type="button"
+                  id="btn-demo-university"
+                  onClick={() => handleQuickDemo('university')}
+                  disabled={isLoading}
+                  className="py-2 px-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>University Scholar</span>
+                </button>
+              </div>
             </div>
 
             {errorMessage && (

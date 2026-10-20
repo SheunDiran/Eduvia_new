@@ -16,13 +16,16 @@ import {
   Sun,
   Moon,
   Menu,
-  X
+  X,
+  Camera,
+  Flame
 } from 'lucide-react';
 import { GradeLevel, UserProfile } from '../types';
 import { GRADES } from '../data/grades';
 import { getStoredTheme, toggleTheme, Theme } from '../utils/theme';
+import { PWAInstallButton } from './PWAInstallButton';
 
-export type NavTab = 'dashboard' | 'subjects' | 'test' | 'opportunities' | 'notes-tasks' | 'study-timer' | 'achievements' | 'settings';
+export type NavTab = 'dashboard' | 'subjects' | 'read' | 'brainfeed' | 'test' | 'opportunities' | 'notes-tasks' | 'study-timer' | 'achievements' | 'settings';
 
 interface NavigationProps {
   currentTab: NavTab;
@@ -31,6 +34,7 @@ interface NavigationProps {
   onChangeGrade: (grade: GradeLevel) => void;
   onLogout: () => void;
   onOpenEduviaAI?: () => void;
+  onOpenPhotoSolver?: () => void;
   isSidebarCollapsed?: boolean;
   onToggleSidebar?: () => void;
   onOpenMobileMenu?: () => void;
@@ -48,7 +52,9 @@ export const Sidebar: React.FC<NavigationProps> = ({
 
   const navItems = [
     { id: 'dashboard' as NavTab, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'subjects' as NavTab, label: 'Subjects & Topics', icon: BookOpen },
+    { id: 'subjects' as NavTab, label: 'Subjects & Topics', icon: GraduationCap },
+    { id: 'read' as NavTab, label: 'Read (Books & Audio)', icon: BookOpen, badge: 'AI Reader' },
+    { id: 'brainfeed' as NavTab, label: 'EduScroll (Brain Bites)', icon: Flame, badge: 'Bites' },
     { id: 'test' as NavTab, label: 'Timed Test (60m)', icon: Timer, badge: 'Exam' },
     { id: 'opportunities' as NavTab, label: 'Opportunities', icon: Trophy, badge: 'New' },
     { id: 'notes-tasks' as NavTab, label: 'Notes & Tasks', icon: CheckSquare },
@@ -175,6 +181,7 @@ export const TopBar: React.FC<NavigationProps> = ({
   onChangeGrade,
   onLogout,
   onOpenEduviaAI,
+  onOpenPhotoSolver,
   isSidebarCollapsed,
   onToggleSidebar,
   onOpenMobileMenu
@@ -270,6 +277,23 @@ export const TopBar: React.FC<NavigationProps> = ({
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Snap Homework Problem Button */}
+        {onOpenPhotoSolver && (
+          <button
+            type="button"
+            id="btn-topbar-snap-photo"
+            onClick={onOpenPhotoSolver}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 active:scale-98 text-white text-xs font-bold shadow-xs transition-all cursor-pointer min-h-[36px]"
+            title="Snap homework photo or upload problem for Eduvia AI to solve"
+          >
+            <Camera className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Snap Problem</span>
+          </button>
+        )}
+
+        {/* PWA Install Button */}
+        <PWAInstallButton />
+
         {/* Dark / Light Theme Toggle in Top Bar */}
         <button
           type="button"
@@ -314,6 +338,7 @@ interface NavigationLayoutProps {
   onLogout: () => void;
   onChangeGrade: (grade: GradeLevel) => void;
   onOpenEduviaAI?: () => void;
+  onOpenPhotoSolver?: () => void;
   children: React.ReactNode;
 }
 
@@ -324,6 +349,7 @@ export const Navigation: React.FC<NavigationLayoutProps> = ({
   onLogout,
   onChangeGrade,
   onOpenEduviaAI,
+  onOpenPhotoSolver,
   children
 }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
@@ -340,7 +366,9 @@ export const Navigation: React.FC<NavigationLayoutProps> = ({
 
   const navItems = [
     { id: 'dashboard' as NavTab, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'subjects' as NavTab, label: 'Subjects & Topics', icon: BookOpen },
+    { id: 'subjects' as NavTab, label: 'Subjects & Topics', icon: GraduationCap },
+    { id: 'read' as NavTab, label: 'Read (Books & Audio)', icon: BookOpen, badge: 'AI Reader' },
+    { id: 'brainfeed' as NavTab, label: 'EduScroll (Brain Bites)', icon: Flame, badge: 'Bites' },
     { id: 'test' as NavTab, label: 'Timed Test (60m)', icon: Timer, badge: 'Exam' },
     { id: 'opportunities' as NavTab, label: 'Opportunities', icon: Trophy, badge: 'New' },
     { id: 'notes-tasks' as NavTab, label: 'Notes & Tasks', icon: CheckSquare },
@@ -427,6 +455,19 @@ export const Navigation: React.FC<NavigationLayoutProps> = ({
                 </div>
               </div>
 
+              {/* Mobile Quick Action for Snap Photo */}
+              {onOpenPhotoSolver && (
+                <button
+                  type="button"
+                  id="btn-mobile-snap-photo"
+                  onClick={() => { setIsMobileMenuOpen(false); onOpenPhotoSolver(); }}
+                  className="w-full mb-3 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold shadow-xs cursor-pointer min-h-[44px]"
+                >
+                  <Camera className="w-4 h-4" />
+                  <span>Snap Homework Problem</span>
+                </button>
+              )}
+
               {/* Nav links */}
               <nav className="space-y-1">
                 {navItems.map((item) => {
@@ -488,6 +529,7 @@ export const Navigation: React.FC<NavigationLayoutProps> = ({
           onChangeGrade={onChangeGrade}
           onLogout={onLogout}
           onOpenEduviaAI={onOpenEduviaAI}
+          onOpenPhotoSolver={onOpenPhotoSolver}
           isSidebarCollapsed={isSidebarCollapsed}
           onToggleSidebar={handleToggleSidebar}
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}

@@ -15,19 +15,18 @@ import { OpportunitiesView } from './components/OpportunitiesView';
 import { SettingsView } from './components/SettingsView';
 import { FloatingEduviaAI } from './components/FloatingEduviaAI';
 import { EduviaAIFullscreen } from './components/EduviaAIFullscreen';
+import { BooksReaderView } from './components/BooksReaderView';
+import { BrainFeedView } from './components/BrainFeedView';
+import { PhotoSolverModal } from './components/PhotoSolverModal';
 
 export default function App() {
-  // CRITICAL REQUIREMENT:
-  // "The Login/Sign Up page must always be the first screen shown when the app is opened — before the Dashboard, before anything else."
-  // "No page (Dashboard, Subjects, Topics, Test, Notes & Tasks) should be reachable without an active login session. If a user isn't logged in and tries to access any other page, redirect them back to the Login page automatically."
-  // "Add a Logout button (visible in the sidebar or top bar on every page once logged in) that ends the session and redirects the user back to the Login page."
-
   const [user, setUser] = useState<UserProfile | null>(() => getStoredSession());
   const [activeView, setActiveView] = useState<string>('dashboard');
   const [selectedSubjectId, setSelectedSubjectId] = useState<SubjectId>('math');
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [initialTopicNote, setInitialTopicNote] = useState<Topic | null>(null);
   const [isAiFullscreen, setIsAiFullscreen] = useState(false);
+  const [isPhotoSolverOpen, setIsPhotoSolverOpen] = useState(false);
 
   // Handle Login success
   const onLoginSuccess = (authenticatedUser: UserProfile) => {
@@ -103,6 +102,7 @@ export default function App() {
         onLogout={handleLogout}
         onChangeGrade={handleChangeGrade}
         onOpenEduviaAI={() => setIsAiFullscreen(true)}
+        onOpenPhotoSolver={() => setIsPhotoSolverOpen(true)}
       >
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto min-h-0 bg-slate-50 dark:bg-[#030712]">
@@ -119,6 +119,7 @@ export default function App() {
               onSelectSubject={handleSelectSubject}
               onLaunchTimedTest={handleLaunchTimedTest}
               onOpenEduviaAI={() => setIsAiFullscreen(true)}
+              onOpenPhotoSolver={() => setIsPhotoSolverOpen(true)}
             />
           )}
 
@@ -127,6 +128,19 @@ export default function App() {
               user={user}
               onSelectSubject={handleSelectSubject}
               onStartTimedTest={handleLaunchTimedTest}
+            />
+          )}
+
+          {activeView === 'read' && (
+            <BooksReaderView user={user} />
+          )}
+
+          {activeView === 'brainfeed' && (
+            <BrainFeedView
+              user={user}
+              onOpenEduviaAIWithQuery={(query) => {
+                setIsAiFullscreen(true);
+              }}
             />
           )}
 
@@ -187,6 +201,17 @@ export default function App() {
         </div>
       </Navigation>
 
+      {/* Homework & Textbook Multimodal Photo Solver Modal */}
+      <PhotoSolverModal
+        isOpen={isPhotoSolverOpen}
+        onClose={() => setIsPhotoSolverOpen(false)}
+        user={user}
+        onOpenInEduviaAI={(initialQuery) => {
+          setIsPhotoSolverOpen(false);
+          setIsAiFullscreen(true);
+        }}
+      />
+
       {/* Persistent Floating Eduvia AI Assistant */}
       <FloatingEduviaAI
         user={user}
@@ -198,6 +223,7 @@ export default function App() {
         user={user}
         isOpen={isAiFullscreen}
         onClose={() => setIsAiFullscreen(false)}
+        onOpenPhotoSolver={() => setIsPhotoSolverOpen(true)}
       />
     </div>
   );

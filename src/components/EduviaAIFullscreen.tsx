@@ -15,7 +15,8 @@ import {
   Lightbulb,
   Clock,
   RotateCcw,
-  GraduationCap
+  GraduationCap,
+  Camera
 } from 'lucide-react';
 import { AIChatMessage, AIChatSession, UserProfile } from '../types';
 import { MarkdownRenderer } from './MarkdownRenderer';
@@ -36,13 +37,15 @@ interface EduviaAIFullscreenProps {
     subject?: string;
     topic?: string;
   };
+  onOpenPhotoSolver?: () => void;
 }
 
 export const EduviaAIFullscreen: React.FC<EduviaAIFullscreenProps> = ({
   user,
   isOpen,
   onClose,
-  initialTopicContext
+  initialTopicContext,
+  onOpenPhotoSolver
 }) => {
   const [sessions, setSessions] = useState<AIChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
@@ -587,15 +590,33 @@ export const EduviaAIFullscreen: React.FC<EduviaAIFullscreenProps> = ({
                   Eduvia AI v2.5 • Curriculum Grounded
                 </span>
 
-                <button
-                  type="submit"
-                  id="btn-send-fullscreen-ai"
-                  disabled={!input.trim() || isLoading}
-                  className="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 disabled:hover:bg-purple-600 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-purple-600/20"
-                >
-                  <span>Send</span>
-                  <Send className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  {onOpenPhotoSolver && (
+                    <button
+                      type="button"
+                      id="btn-ai-fullscreen-snap-photo"
+                      onClick={() => {
+                        onClose();
+                        onOpenPhotoSolver();
+                      }}
+                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-purple-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border border-slate-700"
+                      title="Snap homework photo or diagram for Eduvia AI to analyze"
+                    >
+                      <Camera className="w-3.5 h-3.5 text-purple-400" />
+                      <span className="hidden sm:inline">Snap Problem</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="submit"
+                    id="btn-send-fullscreen-ai"
+                    disabled={!input.trim() || isLoading}
+                    className="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 disabled:hover:bg-purple-600 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-purple-600/20"
+                  >
+                    <span>Send</span>
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </form>
           </div>

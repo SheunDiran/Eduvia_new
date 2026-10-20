@@ -84,6 +84,34 @@ export const GRADES: GradeInfo[] = [
     label: 'Grade 12 (SS 3 / Senior)',
     stage: 'Senior Secondary / High School',
     description: 'Calculus, modern physics, biochemical pathways, international trade, and college entrance.'
+  },
+  {
+    id: 'uni-freshman',
+    number: 13,
+    label: 'University Freshman (Year 1)',
+    stage: 'Higher Education / University',
+    description: 'Intro to Computer Science & Data Structures, Differential Calculus, General Chemistry, and Academic Writing.'
+  },
+  {
+    id: 'uni-sophomore',
+    number: 14,
+    label: 'University Sophomore (Year 2)',
+    stage: 'Higher Education / University',
+    description: 'Algorithms & Complexity, Linear Algebra, Organic Chemistry Mechanisms, Macroeconomic Theory, and Statistics.'
+  },
+  {
+    id: 'uni-junior',
+    number: 15,
+    label: 'University Junior (Year 3)',
+    stage: 'Higher Education / University',
+    description: 'Systems Architecture, Physical Chemistry, Econometrics, Cognitive Neuroscience, and Research Methodologies.'
+  },
+  {
+    id: 'uni-senior',
+    number: 16,
+    label: 'University Senior / Grad Prep',
+    stage: 'Higher Education / University',
+    description: 'Advanced Seminars, Capstone Theses, Quantum Mechanics, Machine Learning Foundations, and Board/GRE Exam Prep.'
   }
 ];
 

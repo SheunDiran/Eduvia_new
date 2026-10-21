@@ -2,11 +2,23 @@ import { GradeLevel } from '../types';
 
 export type OpportunityType =
   | 'Scholarship'
-  | 'Debate Competition'
   | 'STEM & Science'
-  | 'Essay Contest'
+  | 'Debate & Essay'
   | 'Academic Olympiad'
-  | 'Arts & Leadership';
+  | 'Tech & Innovation';
+
+export type EducationLevel =
+  | 'All Students'
+  | 'High School'
+  | 'Undergraduate'
+  | 'University & Graduate';
+
+export type Region =
+  | 'All'
+  | 'Nigeria & Africa'
+  | 'Global'
+  | 'UK & Europe'
+  | 'North America';
 
 export interface Opportunity {
   id: string;
@@ -14,297 +26,462 @@ export interface Opportunity {
   description: string;
   type: OpportunityType;
   eligibleGrades: GradeLevel[];
-  deadline: string; // Formatted date string or 'Rolling Basis'
+  educationLevel: EducationLevel;
+  region: Region;
+  deadline: string; // Formatted date string
   deadlineDate?: string; // YYYY-MM-DD for sorting
   award: string;
+  coverage: string[]; // Key perks: Full Tuition, Flights, Monthly Stipend, etc.
   organizer: string;
   location: string;
-  link: string;
+  link: string; // Official portal URL
+  googleQuery: string; // Search query for verification
   applicationFee: string;
   requirements: string[];
   tips: string[];
   featured?: boolean;
+  status: 'Open Now' | 'Rolling' | 'Opening Soon';
 }
 
 export const OPPORTUNITIES: Opportunity[] = [
   {
-    id: 'opp-coca-cola-scholars',
-    title: 'Coca-Cola Scholars Program Scholarship',
-    description: 'An achievement-based scholarship awarded to graduating high school seniors who demonstrate exceptional leadership, academic excellence, and a sustained commitment to community service.',
+    id: 'opp-mastercard-foundation',
+    title: 'Mastercard Foundation Scholars Program',
+    description: 'One of the largest, most prestigious full-ride scholarship initiatives globally for academically talented African students with leadership potential to study at world-class partner universities.',
     type: 'Scholarship',
-    eligibleGrades: ['grade-12'],
-    deadline: 'October 31, 2026',
-    deadlineDate: '2026-10-31',
-    award: '$20,000 College Tuition Award (150 Winners)',
-    organizer: 'Coca-Cola Scholars Foundation',
-    location: 'United States & International Schools',
-    link: 'https://www.coca-colascholarsfoundation.org/',
-    applicationFee: 'Free to apply',
-    requirements: [
-      'Current high school senior (Grade 12) planning to pursue a post-secondary degree',
-      'Minimum unweighted GPA of 3.0 on a 4.0 scale',
-      'Demonstrated leadership track record in school or community initiatives'
-    ],
-    tips: [
-      'Focus on tangible impact rather than a long list of club memberships.',
-      'Quantify your community leadership outcomes (e.g., students tutored, funds raised).'
-    ],
-    featured: true
-  },
-  {
-    id: 'opp-john-locke-essay',
-    title: 'John Locke Institute Global Essay Competition',
-    description: 'An international academic essay competition inviting young minds to explore challenging questions across Philosophy, Politics, Economics, History, Psychology, Theology, and Law.',
-    type: 'Essay Contest',
-    eligibleGrades: ['grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'June 30, 2026',
-    deadlineDate: '2026-06-30',
-    award: '$10,000 Grand Prize & Oxford Academic Fellowship',
-    organizer: 'John Locke Institute (Oxford & Princeton)',
-    location: 'Global / Online Submission',
-    link: 'https://www.johnlockeinstitute.com/essay-competition',
-    applicationFee: 'Free to enter',
-    requirements: [
-      'Students aged 18 or under (Junior prize for students under 15)',
-      'Single essay under 2,000 words answering one of the annual prompt questions',
-      'Original, rigorously argued academic thesis with proper scholarly citations'
-    ],
-    tips: [
-      'Address the strongest counter-argument directly rather than straw-manning opposing views.',
-      'Eduvia AI Rhetoric mode can assist you in verifying active voice and logical flow.'
-    ],
-    featured: true
-  },
-  {
-    id: 'opp-world-schools-debate',
-    title: 'International World Schools Debating Championship (WSDC)',
-    description: 'The premier global parliamentary debate championship where national high school delegations compete in rapid-fire impromptu and prepared motion debates.',
-    type: 'Debate Competition',
-    eligibleGrades: ['grade-8', 'grade-9', 'grade-10', 'grade-11', 'grade-12'],
+    eligibleGrades: ['grade-12', 'uni-freshman', 'uni-sophomore', 'uni-junior', 'uni-senior'],
+    educationLevel: 'Undergraduate',
+    region: 'Nigeria & Africa',
     deadline: 'December 15, 2026',
     deadlineDate: '2026-12-15',
-    award: 'World Champion Trophy, Speaker Accolades & International Travel Grants',
-    organizer: 'World Schools Debating Championship Council',
-    location: 'Regional Qualifiers Online, Global Finals In-Person',
-    link: 'https://wsdcdebate.org/',
-    applicationFee: 'Funded via national debate societies',
+    award: 'Full Ride: 100% Tuition, Return Airfare, Monthly Living Stipend, Books, Laptop, Visa & Health Coverage',
+    coverage: ['100% Tuition', 'Monthly Stipend', 'Return Airfare', 'Housing & Meals', 'Laptop & Books'],
+    organizer: 'Mastercard Foundation (Partners: McGill, Edinburgh, Toronto, UC Berkeley, KNUST, Ashesi)',
+    location: 'Global (North America, UK, Europe, Africa)',
+    link: 'https://mastercardfdn.org/all/scholars/becoming-a-scholar/',
+    googleQuery: 'Mastercard Foundation Scholars Program undergraduate eligibility apply',
+    applicationFee: '100% Free to apply (partner fee waivers provided)',
     requirements: [
-      'Teams of 3 to 5 secondary school debaters',
-      'Mastery of parliamentary debate format (8-minute substantive speeches + reply speeches)',
-      'Deep fluency in geopolitical, economic, and moral policy motions'
+      'Citizen of an African country with high academic achievement',
+      'Demonstrated commitment to giving back and transforming African communities',
+      'Applying for undergraduate or master\'s degree at a designated partner university',
+      'Facing financial barriers that would otherwise prevent university study'
     ],
     tips: [
-      'Practice 1-hour impromptu prep sessions with teammates without internet access.',
-      'Review Economics and Government curriculum modules in Eduvia to master stakeholder trade-offs.'
+      'Apply early directly through individual partner university portals (e.g., University of Edinburgh or McGill Mastercard portal).',
+      'Write compelling personal statements emphasizing community impact and service projects rather than just grades.'
     ],
-    featured: true
+    featured: true,
+    status: 'Open Now'
+  },
+  {
+    id: 'opp-chevening-scholarship',
+    title: 'Chevening UK Government Scholarships',
+    description: 'The UK government\'s global scholarship programme, funded by the Foreign, Commonwealth and Development Office (FCDO), enabling future leaders to pursue a one-year fully-funded master’s degree in the United Kingdom.',
+    type: 'Scholarship',
+    eligibleGrades: ['uni-junior', 'uni-senior'],
+    educationLevel: 'University & Graduate',
+    region: 'UK & Europe',
+    deadline: 'November 05, 2026',
+    deadlineDate: '2026-11-05',
+    award: 'Full UK University Tuition, Monthly Living Allowance, Economy Flights, Visa & Arrival Allowance',
+    coverage: ['Full Tuition', 'Monthly Allowance', 'Return Flights', 'UK Visa', 'Arrival Grant'],
+    organizer: 'Foreign, Commonwealth and Development Office (FCDO), UK',
+    location: 'United Kingdom (Any UK University)',
+    link: 'https://www.chevening.org/scholarships/',
+    googleQuery: 'Chevening Scholarships UK application requirements eligible courses',
+    applicationFee: 'Free to apply',
+    requirements: [
+      'Undergraduate degree with upper second-class (2:1) honors equivalent',
+      'Minimum two years (2,800 hours) of work or leadership experience (internships and volunteering count)',
+      'Apply to three different eligible UK university courses',
+      'Commitment to return to home country for minimum of two years post-graduation'
+    ],
+    tips: [
+      'Craft four 500-word essays focusing strictly on: Leadership/Influence, Networking, Studying in the UK, and Career Goals.',
+      'Clearly connect your proposed UK degree to solving critical development bottlenecks in your home nation.'
+    ],
+    featured: true,
+    status: 'Open Now'
+  },
+  {
+    id: 'opp-daad-germany',
+    title: 'DAAD Helmut-Schmidt & Study Scholarships (Germany)',
+    description: 'The German Academic Exchange Service (DAAD) offers fully-funded scholarships for international students and scholars to complete undergraduate study and master’s programs in English or German in Germany.',
+    type: 'Scholarship',
+    eligibleGrades: ['uni-sophomore', 'uni-junior', 'uni-senior'],
+    educationLevel: 'University & Graduate',
+    region: 'UK & Europe',
+    deadline: 'October 31, 2026',
+    deadlineDate: '2026-10-31',
+    award: '€934 to €1,300 Monthly Stipend, Travel Subsidy, Health Insurance, Study Research Allowances',
+    coverage: ['Zero Tuition in Germany', 'Monthly Stipend (€934/mo)', 'Health Insurance', 'Travel Flights', 'German Language Course'],
+    organizer: 'German Academic Exchange Service (DAAD)',
+    location: 'Germany (Top Public Universities)',
+    link: 'https://www.daad.de/en/study-and-research-in-germany/scholarships/',
+    googleQuery: 'DAAD scholarship Germany requirements English master bachelor',
+    applicationFee: 'Free to apply',
+    requirements: [
+      'Above-average bachelor or secondary school academic transcripts',
+      'Proof of English proficiency (IELTS/TOEFL) or German proficiency (depending on course language)',
+      'Detailed letter of motivation and academic reference letters from professors'
+    ],
+    tips: [
+      'Public universities in Germany have tuition-free education; DAAD covers your entire living cost, travel, and health insurance.',
+      'Search the DAAD International Programmes database for 100% English-taught degree courses.'
+    ],
+    featured: true,
+    status: 'Open Now'
+  },
+  {
+    id: 'opp-erasmus-mundus',
+    title: 'Erasmus Mundus Joint Masters Scholarships (EU)',
+    description: 'Prestigious, high-level integrated study programmes designed and delivered by an international partnership of European higher education institutions across at least two EU countries.',
+    type: 'Scholarship',
+    eligibleGrades: ['uni-junior', 'uni-senior'],
+    educationLevel: 'University & Graduate',
+    region: 'UK & Europe',
+    deadline: 'January 15, 2027',
+    deadlineDate: '2027-01-15',
+    award: '€1,400 Monthly Living Allowance, Full Tuition Participation Costs, Global Travel & Insurance',
+    coverage: ['Full Tuition', '€1,400/month Stipend', 'Travel Allowance', 'Worldwide Insurance', 'Multi-Country Degree'],
+    organizer: 'European Commission (European Union)',
+    location: 'European Union (Minimum 2 different European countries)',
+    link: 'https://erasmus-plus.ec.europa.eu/opportunities/opportunities-for-individuals/students/erasmus-mundus-joint-masters',
+    googleQuery: 'Erasmus Mundus catalogue scholarships application deadline',
+    applicationFee: 'Free to apply to up to 3 programs',
+    requirements: [
+      'Bachelor’s degree or currently enrolled in the final year of undergraduate studies',
+      'Academic transcripts showing strong subject foundation',
+      'CV in Europass format and two academic recommendation letters'
+    ],
+    tips: [
+      'You study in at least 2 different European countries and receive a joint or double degree.',
+      'Check the Erasmus Mundus Catalogue (EMJMD) to apply to up to 3 separate consortia programs simultaneously.'
+    ],
+    featured: true,
+    status: 'Open Now'
+  },
+  {
+    id: 'opp-ptdf-scholarship',
+    title: 'PTDF Overseas & Local Scholarship Scheme',
+    description: 'The Petroleum Technology Development Fund (PTDF) provides full funding for Nigerian undergraduate, master’s, and PhD students in Engineering, Geology, Computing, Renewable Energy, and Environmental Sciences.',
+    type: 'Scholarship',
+    eligibleGrades: ['uni-freshman', 'uni-sophomore', 'uni-junior', 'uni-senior'],
+    educationLevel: 'Undergraduate',
+    region: 'Nigeria & Africa',
+    deadline: 'March 24, 2027',
+    deadlineDate: '2027-03-24',
+    award: 'Full Tuition Fees, Accommodation, Return Flight Tickets, Living Allowances in UK, France, Germany & Malaysia',
+    coverage: ['Full Tuition Fees', 'Living Allowances', 'Flight Tickets', 'Health Insurance', 'Laptop Allowance'],
+    organizer: 'Petroleum Technology Development Fund (Federal Government of Nigeria)',
+    location: 'Nigeria, United Kingdom, France, Germany & Malaysia',
+    link: 'https://scholarship.ptdf.gov.ng/',
+    googleQuery: 'PTDF scholarship overseas local application portal requirements',
+    applicationFee: 'Free to apply online',
+    requirements: [
+      'Nigerian citizenship with valid National Identity Number (NIN)',
+      'For Undergraduate/Local: Enrolled in accredited Federal/State university in relevant discipline',
+      'For Overseas: Minimum Second Class Upper (2:1) or 2:2 with extensive relevant experience',
+      'Statement of Purpose demonstrating link to energy, technology, or industrialization'
+    ],
+    tips: [
+      'Ensure your NIN details match your WAEC/Degree certificates exactly.',
+      'Focus your statement of purpose on sustainable energy transition, data engineering, or national infrastructure development.'
+    ],
+    featured: true,
+    status: 'Opening Soon'
+  },
+  {
+    id: 'opp-bea-scholarship',
+    title: 'Federal Government Bilateral Education Agreement (BEA) Scholarship',
+    description: 'The Federal Ministry of Education, Nigeria awards full bilateral scholarships for undergraduate and postgraduate studies in Russia, Morocco, Hungary, China, Romania, Serbia, and Algeria.',
+    type: 'Scholarship',
+    eligibleGrades: ['grade-12', 'uni-senior'],
+    educationLevel: 'Undergraduate',
+    region: 'Nigeria & Africa',
+    deadline: 'January 20, 2027',
+    deadlineDate: '2027-01-20',
+    award: 'Free Tuition, Free Accommodation, Monthly Supplemental Allowances & Annual Medical Aid',
+    coverage: ['Host Country Free Tuition', 'Host Country Housing', 'FGN Monthly Allowance ($500/mo)', 'Annual Health Allowance'],
+    organizer: 'Federal Ministry of Education (Federal Scholarship Board), Nigeria',
+    location: 'Russia, Morocco, Hungary, China, Romania, Algeria',
+    link: 'https://education.gov.ng/federal-scholarship-board/',
+    googleQuery: 'Federal Government Bilateral Education Agreement BEA scholarship portal Nigeria',
+    applicationFee: '100% Free official government portal',
+    requirements: [
+      'Undergraduate: Five Distinctions (A & B) in WAEC/NECO in relevant subjects including English and Mathematics',
+      'Certificates must not be older than 2 years',
+      'Age limit: 17 to 20 years for Undergraduate; under 35 for Masters',
+      'Postgraduate: Minimum of First Class or Second Class Upper (2:1) degree'
+    ],
+    tips: [
+      'Computer-Based Tests (CBT) are conducted across designated regional centers in Nigeria.',
+      'Brush up on general mathematics and current affairs before the CBT screening.'
+    ],
+    featured: true,
+    status: 'Open Now'
+  },
+  {
+    id: 'opp-shell-scholarship',
+    title: 'Shell Nigeria University & Secondary Student Scholarships',
+    description: 'Shell Petroleum Development Company (SPDC) awards annual merit scholarships for university undergraduates in Nigerian universities and secondary school students in host communities.',
+    type: 'Scholarship',
+    eligibleGrades: ['grade-9', 'grade-10', 'grade-11', 'grade-12', 'uni-freshman', 'uni-sophomore'],
+    educationLevel: 'Undergraduate',
+    region: 'Nigeria & Africa',
+    deadline: 'February 28, 2027',
+    deadlineDate: '2027-02-28',
+    award: 'Annual Cash Grant Covering Full Academic Expenses Throughout Degree Duration',
+    coverage: ['Annual Educational Grant', 'Internship Priority at Shell', 'Academic Mentorship'],
+    organizer: 'Shell Petroleum Development Company of Nigeria Limited (SPDC)',
+    location: 'Nigeria (Federal & State Universities / Secondary Schools)',
+    link: 'https://www.shell.com.ng/sustainability/communities/education-programmes/scholarships.html',
+    googleQuery: 'Shell Nigeria undergraduate scholarship application requirements SPDC',
+    applicationFee: 'Free official application',
+    requirements: [
+      'Nigerian citizen currently in 100 level in an accredited Nigerian university',
+      'Minimum of 5 credits in WAEC/NECO in one sitting including English and Mathematics',
+      'Scored 200+ in UTME (JAMB)',
+      'Categories include National Merit Scholarship (open to all states) and Host Community awards'
+    ],
+    tips: [
+      'Prepare for an aptitude test covering numerical reasoning, verbal logic, and spatial problem solving.',
+      'Upload high-quality scanned copies of your JAMB result slip and university admission letter.'
+    ],
+    status: 'Rolling'
+  },
+  {
+    id: 'opp-google-generation',
+    title: 'Generation Google Scholarship (EMEA & North America)',
+    description: 'Established to help aspiring computer scientists excel in technology and become leaders in the field. Selected students receive scholarship funding and exclusive access to the Google Student Retreat.',
+    type: 'Tech & Innovation',
+    eligibleGrades: ['uni-freshman', 'uni-sophomore', 'uni-junior'],
+    educationLevel: 'Undergraduate',
+    region: 'Global',
+    deadline: 'April 23, 2027',
+    deadlineDate: '2027-04-23',
+    award: '€7,000 / $10,000 Academic Award + Invitation to Google Virtual Student Retreat & Mentorship',
+    coverage: ['Tuition Grant (€7,000)', 'Google Engineering Mentorship', 'Virtual Retreat Access', 'Resume Review with Google Recruiters'],
+    organizer: 'Google Inc.',
+    location: 'Global (EMEA & North America)',
+    link: 'https://buildyourfuture.withgoogle.com/scholarships/generation-google-scholarship-emea',
+    googleQuery: 'Generation Google Scholarship EMEA application deadline computer science',
+    applicationFee: 'Free to apply',
+    requirements: [
+      'Enrolled as a full-time student in a Bachelors degree program at an accredited university',
+      'Studying Computer Science, Computer Engineering, Software Engineering, or closely related tech field',
+      'Demonstrated passion for improving representation of underrepresented groups in computer science',
+      'Strong academic record and coding foundation'
+    ],
+    tips: [
+      'The short answer questions carry the highest weight. Be concrete about how you introduced others to coding or solved technical challenges.',
+      'Highlight real projects you have built on GitHub or community initiatives you founded.'
+    ],
+    featured: true,
+    status: 'Open Now'
+  },
+  {
+    id: 'opp-microsoft-imagine-cup',
+    title: 'Microsoft Imagine Cup Global Student Competition',
+    description: 'The premier global student technology and startup competition, dubbed the "Olympics of Technology", giving university and high school founders the platform to build game-changing AI and cloud solutions.',
+    type: 'Tech & Innovation',
+    eligibleGrades: ['grade-11', 'grade-12', 'uni-freshman', 'uni-sophomore', 'uni-junior', 'uni-senior'],
+    educationLevel: 'All Students',
+    region: 'Global',
+    deadline: 'January 22, 2027',
+    deadlineDate: '2027-01-22',
+    award: '$100,000 USD Grand Prize + Mentorship Session with Microsoft CEO Satya Nadella + $50,000 Azure Grants',
+    coverage: ['$100,000 Cash Prize', '$50,000 Azure Cloud Credits', '1-on-1 Mentorship with Satya Nadella', 'Global Finals Trip to Microsoft HQ'],
+    organizer: 'Microsoft',
+    location: 'Global Online Rounds + World Championship at Microsoft Redmond HQ',
+    link: 'https://imaginecup.microsoft.com/',
+    googleQuery: 'Microsoft Imagine Cup student competition rules registration',
+    applicationFee: 'Free to register team',
+    requirements: [
+      'Open to students aged 16 and older enrolled in high school or university',
+      'Teams of 1 to 4 students',
+      'Build a working tech prototype leveraging Microsoft Azure cloud or AI APIs',
+      'Submit video pitch, architecture diagram, and live software demo'
+    ],
+    tips: [
+      'Focus on addressing United Nations Sustainable Development Goals (education, climate, healthcare accessibility).',
+      'Utilize GitHub Copilot, OpenAI on Azure, and modern web frameworks to demonstrate rapid execution.'
+    ],
+    featured: true,
+    status: 'Open Now'
+  },
+  {
+    id: 'opp-gates-cambridge',
+    title: 'Gates Cambridge Scholarship (University of Cambridge)',
+    description: 'Established through a $210m donation from the Bill and Melinda Gates Foundation, awarding full funding to outstanding applicants from countries outside the UK to pursue full-time postgraduate study at Cambridge.',
+    type: 'Scholarship',
+    eligibleGrades: ['uni-junior', 'uni-senior'],
+    educationLevel: 'University & Graduate',
+    region: 'UK & Europe',
+    deadline: 'December 03, 2026',
+    deadlineDate: '2026-12-03',
+    award: 'Full Cost of Studying at Cambridge: Tuition, £20,000 Annual Living Stipend, Flights, Inbound Visa',
+    coverage: ['Full Cambridge Tuition', '£20,000/year Stipend', 'Airfare & Visa Costs', 'Academic Development Funding (£2,000)', 'Family Allowance'],
+    organizer: 'Gates Cambridge Trust & University of Cambridge',
+    location: 'Cambridge, United Kingdom',
+    link: 'https://www.gatescambridge.org/',
+    googleQuery: 'Gates Cambridge Scholarship application requirements international students',
+    applicationFee: 'University course application fee (waiver available for eligible countries)',
+    requirements: [
+      'Citizen of any country outside the United Kingdom',
+      'Outstanding intellectual ability (top 5-10% of graduating university class)',
+      'Compelling commitment to improving the lives of others',
+      'Applying for full-time PhD, MSc, MLitt, or one-year postgraduate course at Cambridge'
+    ],
+    tips: [
+      'Your referee must speak directly to your character and social commitment, not just your exam scores.',
+      'Show clear synergy between your proposed Cambridge research lab and your lifelong humanitarian vision.'
+    ],
+    featured: true,
+    status: 'Open Now'
+  },
+  {
+    id: 'opp-rhodes-scholarship',
+    title: 'Rhodes Scholarship at Oxford University',
+    description: 'The oldest and perhaps the most prestigious international scholarship in the world, bringing energetic, courageous young leaders from across the globe to study at the University of Oxford.',
+    type: 'Scholarship',
+    eligibleGrades: ['uni-senior'],
+    educationLevel: 'University & Graduate',
+    region: 'UK & Europe',
+    deadline: 'August 01, 2027',
+    deadlineDate: '2027-08-01',
+    award: 'Full Oxford University & College Fees, Annual Stipend (£19,092/yr), Flights, Medical Insurance',
+    coverage: ['100% Oxford Tuition', '£19,092/yr Living Stipend', 'Two Economy Flights', 'UK Tier 4 Visa & IHS', 'Arrival Allowance'],
+    organizer: 'The Rhodes Trust, Oxford',
+    location: 'Oxford, United Kingdom',
+    link: 'https://www.rhodeshouse.ox.ac.uk/scholarships/the-rhodes-scholarship/',
+    googleQuery: 'Rhodes Scholarship Oxford West Africa Nigeria requirements apply',
+    applicationFee: 'Free to apply',
+    requirements: [
+      'Completed undergraduate degree with First Class Honors or GPA minimum 3.7/4.0',
+      'Ages 19 to 25 at time of application',
+      'Energy to use one’s talents to the full (demonstrated via sports, arts, entrepreneurship)',
+      'Moral force of character, instinct to lead, and compassion for the protection of the weak'
+    ],
+    tips: [
+      'Rhodes committees value moral courage and active empathy as much as sheer academic firepower.',
+      'Prepare meticulously for the rigorous multi-stage interview panel.'
+    ],
+    status: 'Opening Soon'
   },
   {
     id: 'opp-breakthrough-junior',
     title: 'Breakthrough Junior Challenge',
-    description: 'A global science video competition where high school students create an original 90-second video explaining a complex concept in Physics, Life Sciences, or Mathematics.',
+    description: 'A global science video competition founded by tech visionaries (Mark Zuckerberg, Priscilla Chan, Yuri Milner) where students create an original 90-second video explaining a profound concept in Physics, Life Sciences, or Math.',
     type: 'STEM & Science',
     eligibleGrades: ['grade-8', 'grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'June 25, 2026',
-    deadlineDate: '2026-06-25',
-    award: '$250,000 College Scholarship + $100,000 Modern Science Lab for Winner\'s High School',
+    educationLevel: 'High School',
+    region: 'Global',
+    deadline: 'June 25, 2027',
+    deadlineDate: '2027-06-25',
+    award: '$250,000 College Scholarship + $100,000 Science Lab for Winner\'s High School + $50,000 Inspiring Teacher Award',
+    coverage: ['$250,000 University Scholarship', '$100,000 High School Science Lab', '$50,000 Teacher Prize', 'Hollywood Gala Broadcast Ceremony'],
     organizer: 'Breakthrough Prize Foundation',
     location: 'Global / Online Video Submission',
     link: 'https://breakthroughjuniorchallenge.org/',
+    googleQuery: 'Breakthrough Junior Challenge video rules rubrics winner criteria',
     applicationFee: 'Free to enter',
     requirements: [
       'Ages 13 to 18 at time of entry',
-      'Max 90-second video explaining a profound scientific theory',
-      'Participation in Peer-to-Peer review round scoring fellow submissions'
+      'Maximum 90-second video explaining a complex scientific theory with clarity and humor',
+      'Participation in Peer-to-Peer review scoring round'
     ],
     tips: [
-      'Use relatable physical props or creative animations rather than textbook diagrams.',
-      'Pick a topic you genuinely love, like relativity, CRISPR, or neural networks.'
+      'Use relatable physical props, stop-motion, or creative everyday analogies rather than reading slides.',
+      'Hook the viewer in the first 5 seconds with a mind-bending question.'
     ],
-    featured: true
+    featured: true,
+    status: 'Open Now'
   },
   {
-    id: 'opp-regen-isef',
-    title: 'Regeneron International Science & Engineering Fair (ISEF)',
-    description: 'The world\'s largest international pre-college STEM research competition, gathering over 1,800 high school researchers from 75+ countries to showcase original science and engineering projects.',
-    type: 'Academic Olympiad',
+    id: 'opp-john-locke-essay',
+    title: 'John Locke Institute Global Essay Competition',
+    description: 'An international academic essay competition inviting independent thinkers to explore deep questions across Philosophy, Politics, Economics, History, Psychology, Theology, and Law.',
+    type: 'Debate & Essay',
     eligibleGrades: ['grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'February 28, 2026',
-    deadlineDate: '2026-02-28',
-    award: '$75,000 George D. Yancopoulos Innovator Award + $5M+ in Category Grand Awards',
-    organizer: 'Society for Science',
-    location: 'Affiliated Regional Fairs leading to Global Finals',
-    link: 'https://www.societyforscience.org/isef/',
-    applicationFee: 'Free entry through affiliated fairs',
+    educationLevel: 'High School',
+    region: 'Global',
+    deadline: 'June 30, 2027',
+    deadlineDate: '2027-06-30',
+    award: '$10,000 Grand Prize & Oxford Academic Fellowship Awards',
+    coverage: ['$10,000 Grand Prize', 'Oxford Gala Dinner Invitation', 'Publication in Academic Review', 'Oxford Seminar Bursaries'],
+    organizer: 'John Locke Institute (Oxford & Princeton)',
+    location: 'Global / Online Submission',
+    link: 'https://www.johnlockeinstitute.com/essay-competition',
+    googleQuery: 'John Locke Institute essay competition prompts winners tips',
+    applicationFee: 'Free to enter before standard deadline',
     requirements: [
-      'Grades 9-12 or equivalent secondary education',
-      'Individual or team (up to 3 students) independent research project',
-      'Formal scientific paper, research abstract, and quad-chart presentation poster'
+      'Students aged 18 or under (Junior prize for students under 15)',
+      'Single essay under 2,000 words answering one of the annual prompt questions',
+      'Original, rigorously argued academic thesis with scholarly references'
     ],
     tips: [
-      'Start research protocols early to pass Institutional Review Board (IRB) approvals.',
-      'Emphasize novel methodology and quantitative statistical error analysis.'
-    ]
-  },
-  {
-    id: 'opp-harvard-model-un',
-    title: 'Harvard National Model United Nations (HNMUN & HMUN)',
-    description: 'The oldest and most prestigious high school Model UN simulation, bringing together 3,000+ delegates to debate international diplomacy, peacekeeping, and global humanitarian crises.',
-    type: 'Debate Competition',
-    eligibleGrades: ['grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'November 10, 2026',
-    deadlineDate: '2026-11-10',
-    award: 'Best Delegate Gavels, Outstanding Delegation Diplomas & Harvard Certificates',
-    organizer: 'Harvard International Relations Council',
-    location: 'Boston, MA & Virtual High School Sessions',
-    link: 'https://www.harvardmun.org/',
-    applicationFee: 'School delegation registration fee (need-based aid available)',
-    requirements: [
-      'Enrolled secondary student represented by school delegation or independent delegation',
-      'Comprehensive country position paper submitted ahead of committee sessions',
-      'Mastery of UN parliamentary rules of procedure and multilateral caucus negotiation'
+      'Confront the strongest counter-argument directly with steel-manned logic.',
+      'Use active voice, clear definitions, and eliminate empty rhetorical filler.'
     ],
-    tips: [
-      'Draft actionable, multi-clause draft resolutions with realistic funding mechanisms.',
-      'Form broad unmoderated caucus coalitions early on day 1.'
-    ]
+    featured: true,
+    status: 'Open Now'
   },
   {
-    id: 'opp-davidson-fellows',
-    title: 'Davidson Fellows Scholarship Program',
-    description: 'Named by Forbes as one of the most prestigious undergraduate scholarships in the world, honoring young people under 18 who have completed significant, graduate-level work.',
-    type: 'Scholarship',
-    eligibleGrades: ['grade-7', 'grade-8', 'grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'February 15, 2026',
-    deadlineDate: '2026-02-15',
-    award: '$50,000, $25,000, and $10,000 Scholarships + Congressional Honors in Washington D.C.',
-    organizer: 'Davidson Institute for Talent Development',
-    location: 'United States & U.S. Citizens living abroad',
-    link: 'https://www.davidsongifted.org/fellows-scholarship/',
-    applicationFee: 'Free to apply',
-    requirements: [
-      '18 or younger as of application deadline',
-      'Portfolio in Science, Technology, Engineering, Math, Literature, Music, or Philosophy',
-      'Work must be recognized by experts as exemplary at an advanced or university level'
-    ],
-    tips: [
-      'Include recommendations from university mentors who can testify to the project\'s novelty.',
-      'Clearly articulate the societal benefit of your work.'
-    ]
-  },
-  {
-    id: 'opp-usamo-olympiad',
-    title: 'USA Mathematical Olympiad & AMC Math Competitions',
-    description: 'The pinnacle high school mathematics competition sequence (AMC 10/12 → AIME → USAMO), identifying the top mathematical problem solvers for the International Math Olympiad (IMO).',
+    id: 'opp-pamo-math-olympiad',
+    title: 'Pan-African Mathematics Olympiad (PAMO) & IMO',
+    description: 'The official continental high school mathematical competition organized by the African Mathematical Union (AMU), qualifying top youth for the International Mathematical Olympiad (IMO).',
     type: 'Academic Olympiad',
-    eligibleGrades: ['grade-6', 'grade-7', 'grade-8', 'grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'November 05, 2026',
-    deadlineDate: '2026-11-05',
-    award: 'National Math Olympiad Medals & MOSP Training Camp Invitation',
-    organizer: 'Mathematical Association of America (MAA)',
-    location: 'Proctored in high schools worldwide & online test centers',
-    link: 'https://www.maa.org/math-competitions',
-    applicationFee: '$3.50 test administration fee per student',
-    requirements: [
-      'AMC 10: Grades 10 and below; AMC 12: Grades 12 and below',
-      '75-minute, 25-question multiple choice test focusing on geometry, algebra, and number theory',
-      'No calculators permitted'
-    ],
-    tips: [
-      'Use Eduvia Further Math and Algebra modules to practice modular arithmetic and combinatorial proofs.',
-      'Review Art of Problem Solving volume 1 and past AIME qualifying papers.'
-    ]
-  },
-  {
-    id: 'opp-scholastic-art-writing',
-    title: 'Scholastic Art & Writing National Awards',
-    description: 'The nation\'s longest-running, most prestigious recognition program for creative teenagers, whose past alumni include Andy Warhol, Sylvia Plath, and Stephen King.',
-    type: 'Arts & Leadership',
-    eligibleGrades: ['grade-7', 'grade-8', 'grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'December 18, 2026',
-    deadlineDate: '2026-12-18',
-    award: 'National Gold Medals + $12,500 Portfolio Scholarships at Carnegie Hall',
-    organizer: 'Alliance for Young Artists & Writers',
-    location: 'United States, Canada & American Overseas Schools',
-    link: 'https://www.artandwriting.org/',
-    applicationFee: '$10 per entry (fee waivers available with 1-click)',
-    requirements: [
-      'Students in grades 7–12 (ages 13 and up)',
-      'Submissions accepted in 28 categories (Critical Essay, Short Story, Poetry, Journalism, Photography, Digital Art)',
-      'Judged blind on originality, technical skill, and emergence of a personal voice'
-    ],
-    tips: [
-      'Submit bold, experimental pieces that showcase your authentic voice.',
-      'Revise thoroughly for evocative pacing and sensory detail.'
-    ]
-  },
-  {
-    id: 'opp-conrad-challenge',
-    title: 'The Conrad Challenge for Student Entrepreneurs & Inventors',
-    description: 'An annual innovation competition that challenges teams of high school students to use science and technology to solve pressing global challenges and commercialize viable startups.',
-    type: 'STEM & Science',
     eligibleGrades: ['grade-8', 'grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'November 20, 2026',
-    deadlineDate: '2026-11-20',
-    award: 'Pete Conrad Scholar Title, Dell Innovation Grant & $20,000+ University Scholarships',
-    organizer: 'The Conrad Foundation (NASA Partner)',
-    location: 'Global Online Round + Astronaut Memorial Finals at Kennedy Space Center',
-    link: 'https://www.conradchallenge.org/',
-    applicationFee: 'Free for Investor Pitch entry round',
+    educationLevel: 'High School',
+    region: 'Nigeria & Africa',
+    deadline: 'May 12, 2027',
+    deadlineDate: '2027-05-12',
+    award: 'Gold, Silver & Bronze Continental Medals + International University Scholarships',
+    coverage: ['Fully Funded International Travel to Host Nation', 'Olympic Medals & Citations', 'Direct Admission Track to Elite Math Universities'],
+    organizer: 'African Mathematical Union & National Mathematical Centre (NMC Abuja)',
+    location: 'African Host Nations (e.g., South Africa, Rwanda, Senegal, Nigeria)',
+    link: 'https://pamo-official.org/',
+    googleQuery: 'Pan African Mathematics Olympiad PAMO qualification past papers NMC Abuja',
+    applicationFee: 'Funded by National Mathematical Centre',
     requirements: [
-      'Teams of 2 to 5 students aged 13–18',
-      'Categories: Aerospace & Aviation, Cyber-Technology & Security, Energy & Environment, Health & Nutrition',
-      'Submissions include an Investor Pitch executive summary and technical feasibility study'
+      'Secondary school students under 20 years old',
+      'Pass national olympiad stages 1, 2, and 3 conducted by the National Mathematical Centre',
+      'Solve rigorous proof-based problems in Number Theory, Combinatorics, Geometry, and Functional Equations'
     ],
     tips: [
-      'Build a working low-fidelity prototype or interactive digital mockup to demonstrate viability.',
-      'Conduct customer validation interviews with real potential users.'
-    ]
+      'Review Euclidean geometry transformations, modular congruence, and Pigeonhole principle.',
+      'Eduvia Further Math and Algebra curriculum topics cover foundational olympiad proofs.'
+    ],
+    status: 'Open Now'
   },
   {
-    id: 'opp-taco-bell-live-mas',
-    title: 'Taco Bell Live Más Scholarship for Creative Changemakers',
-    description: 'Unlike traditional scholarships, this award is not based on grades or test scores — it is strictly passion-based for passionate young innovators who want to ignite change in their communities.',
+    id: 'opp-coca-cola-scholars',
+    title: 'Coca-Cola Scholars Program Scholarship',
+    description: 'An achievement-based scholarship awarded to graduating high school seniors who demonstrate visionary leadership, academic excellence, and continuous service to their communities.',
     type: 'Scholarship',
-    eligibleGrades: ['grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'January 10, 2027',
-    deadlineDate: '2027-01-10',
-    award: '$5,000 to $25,000 College Tuition Grants (Over $10 Million Awarded Annually)',
-    organizer: 'Taco Bell Foundation',
-    location: 'United States',
-    link: 'https://www.tacobellfoundation.org/live-mas-scholarship/',
+    eligibleGrades: ['grade-12'],
+    educationLevel: 'High School',
+    region: 'North America',
+    deadline: 'October 31, 2026',
+    deadlineDate: '2026-10-31',
+    award: '$20,000 College Tuition Award (150 Winners Selected Annually)',
+    coverage: ['$20,000 College Tuition Award', 'Coca-Cola Scholars Weekend in Atlanta', 'Lifelong Alumni Network of 7,000+ Leaders'],
+    organizer: 'Coca-Cola Scholars Foundation',
+    location: 'United States & American International Schools',
+    link: 'https://www.coca-colascholarsfoundation.org/',
+    googleQuery: 'Coca Cola Scholars Foundation scholarship eligibility application dates',
     applicationFee: 'Free to apply',
     requirements: [
-      'Ages 16–26 pursuing secondary or post-secondary credentials',
-      'Submit an original 2-minute video describing what you love doing and how you will use it to make an impact',
-      'No GPA or test scores required'
+      'Current high school senior planning to pursue a degree at an accredited post-secondary institution',
+      'Minimum unweighted GPA of 3.0 on a 4.0 scale',
+      'Demonstrated track record of leading grassroots community initiatives'
     ],
     tips: [
-      'Be 100% authentic and show, don\'t just tell, your unique passion.',
-      'Explain your plan to give back to others through your chosen career path.'
-    ]
-  },
-  {
-    id: 'opp-junior-science-humanities',
-    title: 'Junior Science and Humanities Symposium (JSHS)',
-    description: 'A tri-service (U.S. Army, Navy, and Air Force) sponsored STEM competition that promotes original scientific research and experimentation at the high school level.',
-    type: 'Academic Olympiad',
-    eligibleGrades: ['grade-9', 'grade-10', 'grade-11', 'grade-12'],
-    deadline: 'January 25, 2027',
-    deadlineDate: '2027-01-25',
-    award: '$12,000 First Place National Scholarship + DoD Laboratory Mentorship',
-    organizer: 'National Science Teaching Association & Department of Defense',
-    location: '49 Regional Symposia Across U.S. and Europe',
-    link: 'https://jshs.org/',
-    applicationFee: 'Free to enter',
-    requirements: [
-      'Grades 9-12 enrolled high school students',
-      'Original experimental research paper in Environmental Science, Biomedical, Engineering, or Mathematics',
-      'Oral presentation or poster defense before a panel of research scientists'
+      'Focus on measurable impact (e.g., number of students mentored, policy changes enacted).',
+      'Highlight perseverance and how you rallied peers to solve local challenges.'
     ],
-    tips: [
-      'Structure your slides to emphasize hypothesis falsification and raw error margins.',
-      'Practice answering impromptu technical defense questions with confidence.'
-    ]
+    status: 'Open Now'
   }
 ];

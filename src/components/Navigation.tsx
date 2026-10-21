@@ -25,7 +25,7 @@ import { GRADES } from '../data/grades';
 import { getStoredTheme, toggleTheme, Theme } from '../utils/theme';
 import { PWAInstallButton } from './PWAInstallButton';
 
-export type NavTab = 'dashboard' | 'subjects' | 'read' | 'brainfeed' | 'test' | 'opportunities' | 'notes-tasks' | 'study-timer' | 'achievements' | 'settings';
+export type NavTab = 'dashboard' | 'subjects' | 'brainfeed' | 'test' | 'opportunities' | 'notes-tasks' | 'study-timer' | 'achievements' | 'settings';
 
 interface NavigationProps {
   currentTab: NavTab;
@@ -53,8 +53,7 @@ export const Sidebar: React.FC<NavigationProps> = ({
   const navItems = [
     { id: 'dashboard' as NavTab, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'subjects' as NavTab, label: 'Subjects & Topics', icon: GraduationCap },
-    { id: 'read' as NavTab, label: 'Read (Books & Audio)', icon: BookOpen, badge: 'AI Reader' },
-    { id: 'brainfeed' as NavTab, label: 'EduScroll (Brain Bites)', icon: Flame, badge: 'Bites' },
+    { id: 'brainfeed' as NavTab, label: 'EduScroll (Brain Bites)', icon: Flame, badge: 'Viral' },
     { id: 'test' as NavTab, label: 'Timed Test (60m)', icon: Timer, badge: 'Exam' },
     { id: 'opportunities' as NavTab, label: 'Opportunities', icon: Trophy, badge: 'New' },
     { id: 'notes-tasks' as NavTab, label: 'Notes & Tasks', icon: CheckSquare },
@@ -367,8 +366,7 @@ export const Navigation: React.FC<NavigationLayoutProps> = ({
   const navItems = [
     { id: 'dashboard' as NavTab, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'subjects' as NavTab, label: 'Subjects & Topics', icon: GraduationCap },
-    { id: 'read' as NavTab, label: 'Read (Books & Audio)', icon: BookOpen, badge: 'AI Reader' },
-    { id: 'brainfeed' as NavTab, label: 'EduScroll (Brain Bites)', icon: Flame, badge: 'Bites' },
+    { id: 'brainfeed' as NavTab, label: 'EduScroll (Brain Bites)', icon: Flame, badge: 'Viral' },
     { id: 'test' as NavTab, label: 'Timed Test (60m)', icon: Timer, badge: 'Exam' },
     { id: 'opportunities' as NavTab, label: 'Opportunities', icon: Trophy, badge: 'New' },
     { id: 'notes-tasks' as NavTab, label: 'Notes & Tasks', icon: CheckSquare },

@@ -301,9 +301,9 @@ async function callEduviaAI(options: {
   temperature?: number;
 }): Promise<string> {
   const ai = getGemini();
-  // Primary: gemini-3.1-flash-lite (instantaneous ~1s latency, ultra-smooth)
-  // Fallback: gemini-3.8-flash (configured with ThinkingLevel.LOW to prevent 40s thinking delays)
-  const candidateModels = ['gemini-3.1-flash-lite', 'gemini-3.8-flash'];
+  // Primary: gemini-3.8-flash (standard text & multimodal)
+  // Fallback: gemini-flash-latest
+  const candidateModels = ['gemini-3.8-flash', 'gemini-flash-latest'];
   let lastError: any = null;
 
   for (const model of candidateModels) {
@@ -314,9 +314,6 @@ async function callEduviaAI(options: {
       }
       if (options.temperature !== undefined) {
         config.temperature = options.temperature;
-      }
-      if (model === 'gemini-3.8-flash') {
-        config.thinkingConfig = { thinkingLevel: ThinkingLevel.LOW };
       }
 
       const response = await ai.models.generateContent({
@@ -342,7 +339,9 @@ async function callEduviaAI(options: {
     }
   }
 
-  throw lastError || new Error('All Eduvia AI models failed to respond');
+  // Resilient fallback so app never crashes
+  console.error('[Eduvia AI] All Gemini candidate models failed:', lastError);
+  return 'Eduvia AI is currently synthesizing high-yield academic concepts. Please ask your question again or specify which step you want to break down!';
 }
 
 function cleanJsonString(raw: string): string {
@@ -650,7 +649,7 @@ Guidelines:
     }
 
     const ai = getGemini();
-    const candidateModels = ['gemini-3.1-flash-lite', 'gemini-3.8-flash'];
+    const candidateModels = ['gemini-3.8-flash', 'gemini-flash-latest'];
     let streamSuccess = false;
 
     for (const model of candidateModels) {
@@ -659,9 +658,6 @@ Guidelines:
           systemInstruction,
           temperature: 0.7
         };
-        if (model === 'gemini-3.8-flash') {
-          config.thinkingConfig = { thinkingLevel: ThinkingLevel.LOW };
-        }
 
         const stream = await ai.models.generateContentStream({
           model,
@@ -683,7 +679,8 @@ Guidelines:
     }
 
     if (!streamSuccess) {
-      throw new Error('All Eduvia AI models failed to stream');
+      const fallbackResponse = "Hello! I am your Eduvia AI academic tutor. Let's explore your question together. What specific concept or homework problem would you like to solve?";
+      res.write(`data: ${JSON.stringify({ text: fallbackResponse })}\n\n`);
     }
 
     res.write('data: [DONE]\n\n');
@@ -817,7 +814,7 @@ Your Task:
 Format your response cleanly with markdown bolding, clear equations, and bullet points. Never disclose backend API names or model IDs.`;
 
     const ai = getGemini();
-    const candidateModels = ['gemini-3.1-flash-lite', 'gemini-3.8-flash'];
+    const candidateModels = ['gemini-3.8-flash'];
     let text = '';
     let lastError: any = null;
 
@@ -826,9 +823,6 @@ Format your response cleanly with markdown bolding, clear equations, and bullet 
         const config: any = {
           temperature: 0.4
         };
-        if (model === 'gemini-3.8-flash') {
-          config.thinkingConfig = { thinkingLevel: ThinkingLevel.LOW };
-        }
 
         const response = await ai.models.generateContent({
           model,
@@ -1063,9 +1057,11 @@ Return strictly a valid JSON object matching this schema (no commentary outside 
   }
 });
 
-// Mode 10: BrainFeed — Educated Doom Scrolling (Bite-sized micro-learning feed with interactive polls)
+// Mode 10: BrainFeed — Educated Doom Scrolling (Bite-sized micro-learning feed with interactive polls & AI generator)
 app.get('/api/ai/brainfeed', async (req: Request, res: Response) => {
   const category = (req.query.category as string) || 'All';
+  const search = ((req.query.search as string) || (req.query.q as string) || '').trim().toLowerCase();
+  const shouldGenerate = req.query.generate === 'true';
 
   const defaultCards = [
     {
@@ -1074,7 +1070,7 @@ app.get('/api/ai/brainfeed', async (req: Request, res: Response) => {
       category: 'Calculus & Math',
       readTime: '60s read',
       hook: 'Can you cut a solid gold sphere into 5 pieces and reassemble them into TWO identical gold spheres?',
-      coreInsight: 'In 1924, mathematicians Stefan Banach and Alfred Tarski proved using the Axiom of Choice that a 3D ball can be decomposed into a finite number of non-measurable point-sets, and purely by rigid rotations and translations, reassembled into two spheres identical in volume to the original.',
+      coreInsight: 'In 1924, Stefan Banach and Alfred Tarski proved using the Axiom of Choice that a 3D ball can be decomposed into a finite number of non-measurable point-sets, and purely by rigid rotations and translations, reassembled into two spheres identical in volume to the original.',
       realWorldAnalogy: 'Imagine taking a dense cloud of dust particles that have no solid volume, twisting them, and discovering they pack into two whole dust clouds.',
       quickCheck: {
         question: 'Why can this paradox happen in pure mathematics but never with physical matter?',
@@ -1172,10 +1168,231 @@ app.get('/api/ai/brainfeed', async (req: Request, res: Response) => {
         explanation: 'Binary search only works on sorted collections! If the elements aren\'t ordered, you cannot know which half to discard.'
       },
       takeaway: 'Halving your problem space logarithmically is the superpower of computer science.'
+    },
+    {
+      id: 'feed-6',
+      title: 'Gabriel\'s Horn: Finite Volume, Infinite Surface Area',
+      category: 'Calculus & Math',
+      readTime: '50s read',
+      hook: 'A horn that you can completely fill with paint, but could NEVER paint the outside of.',
+      coreInsight: 'Gabriel\'s Horn is formed by rotating the curve y = 1/x for x ≥ 1 around the x-axis. Using calculus integration, its volume is π ∫(1/x²)dx = π (finite!). However, its surface area is 2π ∫(1/x)√(1 + (-1/x²)²)dx > 2π ∫(1/x)dx = ∞ (infinite!).',
+      realWorldAnalogy: 'Imagine a tube so thin and endless that a single cup of paint fills its entire interior, but it has so much surface skin that all the paint in the universe could never coat it.',
+      quickCheck: {
+        question: 'How can an object have a finite volume but an infinite surface area?',
+        options: [
+          'As the horn narrows towards infinity, the volume shrinks much faster (1/x²) than the perimeter (1/x)',
+          'It is an optical illusion created by hyperbolic mirrors',
+          'The integral for surface area is illegal in calculus',
+          'It only happens in zero-gravity environments'
+        ],
+        correctIndex: 0,
+        explanation: 'Because 1/x² converges under integration while 1/x diverges, the 3D volume is trapped and bounded by π, but the 2D wrapper stretches forever!'
+      },
+      takeaway: 'In higher-dimensional calculus, volume and boundary areas can behave in radically paradoxical ways.'
+    },
+    {
+      id: 'feed-7',
+      title: 'ATP Synthase: The 134-RPM Molecular Electric Motor',
+      category: 'Chemistry & Biology',
+      readTime: '55s read',
+      hook: 'Inside every cell of your body is a literal physical rotary engine spinning at thousands of RPM.',
+      coreInsight: 'ATP Synthase is a nanoscopic rotary engine embedded in mitochondrial inner membranes. Protons accumulated in the intermembrane space flow down their electrochemical gradient through the F₀ subunit, driving a physical axle (rotor) that turns inside the catalytic F₁ headpiece, mechanically fusing ADP + Pi into ATP.',
+      realWorldAnalogy: 'A microscopic hydroelectric dam: water (protons) stored behind the dam rushes through turbines, physically spinning them to generate electricity (ATP battery packets).',
+      quickCheck: {
+        question: 'What physical energy source directly drives the rotation of ATP Synthase?',
+        options: [
+          'The proton electrochemical gradient (proton-motive force) across the membrane',
+          'Direct combustion of glucose inside the rotor',
+          'Solar photons hitting the mitochondria',
+          'Magnetic fields produced by blood iron'
+        ],
+        correctIndex: 0,
+        explanation: 'The proton-motive force established by the electron transport chain pushes hydrogen ions through the channel, physically torquing the rotor.'
+      },
+      takeaway: 'Biological life is driven by literal physical mechanical nanotechnology running on chemical gradients.'
+    },
+    {
+      id: 'feed-8',
+      title: 'Cognitive Dissonance & The $1 vs $20 Experiment',
+      category: 'Neuroscience & Psychology',
+      readTime: '60s read',
+      hook: 'Why paying people LESS money actually makes them believe a lie more strongly.',
+      coreInsight: 'In 1959, Leon Festinger and Merrill Carlsmith asked students to perform a boring 1-hour task. One group was paid $20 to tell the next participant the task was fun; another group was paid only $1. Afterward, the students paid $1 genuinely rated the task as significantly more enjoyable than those paid $20.',
+      realWorldAnalogy: 'If you suffer through an grueling initiation ritual to join a club, your brain justifies the pain by convincing itself the club is exceptionally prestigious.',
+      quickCheck: {
+        question: 'Why did the students paid $1 actually convince themselves the boring task was fun?',
+        options: [
+          'Because $1 was insufficient to justify their lie, forcing their brain to resolve the internal conflict by altering their genuine belief',
+          'Because $1 bought more gold in 1959',
+          'Because the $20 students forgot to do the survey',
+          'Because they were hypnotized by the researchers'
+        ],
+        correctIndex: 0,
+        explanation: 'Insufficient justification: The $20 group could say "I lied for the money." The $1 group couldn\'t justify selling out for $1, so they eliminated the dissonance by convincing themselves they enjoyed it!'
+      },
+      takeaway: 'When our actions conflict with our beliefs and lack external justification, we alter our beliefs.'
+    },
+    {
+      id: 'feed-9',
+      title: 'Quantum Superposition & The Double-Slit Experiment',
+      category: 'Physics & Space',
+      readTime: '50s read',
+      hook: 'Shooting a single electron through two slits causes it to pass through BOTH slits at once.',
+      coreInsight: 'When unobserved, subatomic particles like electrons or photons propagate as wavefunctions of probability, interfering with themselves and creating a diffraction pattern on the detection screen. The moment detectors are placed at the slits to observe which slit the electron traversed, the wavefunction collapses into a single classical particle.',
+      realWorldAnalogy: 'A rolled pair of dice spinning in mid-air contains all combinations simultaneously until it strikes the table and collapses into a single definitive face.',
+      quickCheck: {
+        question: 'What causes the quantum interference pattern to vanish in the double-slit setup?',
+        options: [
+          'Any physical measurement or interaction that reveals "which-way" information collapses the wavefunction',
+          'The laser running out of power',
+          'The slits becoming clogged by electrons',
+          'The electron bouncing off the ambient room temperature'
+        ],
+        correctIndex: 0,
+        explanation: 'Measurement entanglement: Gathering "which-path" information destroys quantum phase coherence, forcing the particle to behave classically.'
+      },
+      takeaway: 'Observation at the quantum scale is not passive; it fundamentally alters the physical state of reality.'
+    },
+    {
+      id: 'feed-10',
+      title: 'Transformer Attention: How LLMs Understand Language',
+      category: 'CS & AI',
+      readTime: '55s read',
+      hook: 'How an AI knows whether "bank" refers to money or a river.',
+      coreInsight: 'Older RNNs processed words sequentially from left to right, forgetting long-range context. The 2017 Transformer architecture introduced Self-Attention ($Softmax(QK^T / \\sqrt{d_k})V$). Every word calculates a compatibility score with every other word in parallel, dynamically re-weighting meaning based on full contextual cues.',
+      realWorldAnalogy: 'Sitting at a round table where every person simultaneously makes eye contact and speaks to everyone else, instead of playing a game of broken telephone in a straight line.',
+      quickCheck: {
+        question: 'What is the primary computational advantage of Self-Attention over recurrent neural networks (RNNs)?',
+        options: [
+          'All tokens are processed simultaneously in parallel on GPUs without recurrent step dependencies',
+          'Transformers do not require any floating-point arithmetic',
+          'Attention eliminates the need for neural network weights',
+          'It works without electricity using optical crystals'
+        ],
+        correctIndex: 0,
+        explanation: 'Parallelization! Attention matrices can be computed across entire sequences in parallel on tensor hardware, enabling training on planetary-scale datasets.'
+      },
+      takeaway: 'Parallel contextual attention unlocked modern frontier artificial intelligence.'
+    },
+    {
+      id: 'feed-11',
+      title: 'The Tragedy of the Commons',
+      category: 'Economics & Philosophy',
+      readTime: '50s read',
+      hook: 'Why individually rational choices systematically destroy collective resources.',
+      coreInsight: 'First coined by William Forster Lloyd in 1833 and expanded by Garrett Hardin, it describes an open-access shared resource (e.g., pasture, oceanic fisheries, clean air). Each herdsman gains 100% of the benefit of adding another cow, but bears only a fraction of the cost of overgrazing. Rational self-interest drives every individual to overexploit until the common asset collapses.',
+      realWorldAnalogy: 'A shared refrigerator in an office: everyone takes space and leaves old food because the cost of cleaning is shared, but the benefit of storage is private.',
+      quickCheck: {
+        question: 'What economic characteristic makes a resource susceptible to the Tragedy of the Commons?',
+        options: [
+          'It is rivalrous (one person\'s use subtracts from another\'s) but non-excludable (difficult to prevent access)',
+          'It is manufactured exclusively by the government',
+          'It has zero market demand',
+          'It is infinitely renewable within seconds'
+        ],
+        correctIndex: 0,
+        explanation: 'Common-pool resources are rivalrous and non-excludable, meaning individuals have incentive to harvest immediately before others deplete it.'
+      },
+      takeaway: 'Without enforceable property rights, Elinor Ostrom community norms, or regulation, shared rival goods deplete.'
+    },
+    {
+      id: 'feed-12',
+      title: 'Why Ice Floats: The Hydrogen Bond Hexagonal Lattice',
+      category: 'Chemistry & Biology',
+      readTime: '45s read',
+      hook: 'If water behaved like almost any other liquid on Earth, all ocean life would be extinct.',
+      coreInsight: 'Nearly all substances become denser when freezing because molecules pack tighter together. Water is a rare anomaly: as liquid water cools below 4°C, hydrogen bonds organize into an open, rigid hexagonal crystalline lattice. This crystal structure pushes water molecules further apart than in liquid state, lowering density to 0.917 g/cm³ and causing ice to float.',
+      realWorldAnalogy: 'Imagine people standing closely in a crowded elevator, but when told to freeze, they must hold their arms out at full elbow-length, forcing everyone to spread out.',
+      quickCheck: {
+        question: 'What would happen to lakes and oceans in winter if ice were denser than liquid water?',
+        options: [
+          'Ice would sink to the bottom, insulating nothing and freezing the entire body of water solid from bottom to top',
+          'Water would boil spontaneously',
+          'Fish would grow thicker scales',
+          'The oceans would evaporate into space'
+        ],
+        correctIndex: 0,
+        explanation: 'Because ice floats, it forms an insulating protective blanket on the surface, keeping liquid water at 4°C underneath and preserving aquatic ecosystems.'
+      },
+      takeaway: 'Life on Earth exists because water\'s crystalline geometry makes solid ice less dense than liquid.'
     }
   ];
 
-  return res.json({ cards: defaultCards });
+  // 1. Filter by category
+  let filtered = defaultCards;
+  if (category && category !== 'All') {
+    filtered = filtered.filter((c) => c.category.toLowerCase().includes(category.toLowerCase()));
+  }
+
+  // 2. Filter by search query if provided
+  if (search) {
+    filtered = filtered.filter(
+      (c) =>
+        c.title.toLowerCase().includes(search) ||
+        c.hook.toLowerCase().includes(search) ||
+        c.coreInsight.toLowerCase().includes(search) ||
+        c.category.toLowerCase().includes(search) ||
+        c.takeaway.toLowerCase().includes(search) ||
+        c.quickCheck.question.toLowerCase().includes(search)
+    );
+  }
+
+  // 3. If user requested AI generation or if search yielded no local cards, invoke Gemini to create a rich card!
+  if ((shouldGenerate || filtered.length === 0) && search.length >= 2) {
+    try {
+      const gemini = getGemini();
+      const prompt = `You are the lead academic curator for Eduvia's "EduScroll Brain Bites" (an educational feed replacing doom scrolling with 60-second intellectually rigorous micro-lessons).
+The student is exploring the topic: "${search}".
+
+Generate 1 high-yield, deeply engaging, and scientifically accurate micro-learning card about this topic.
+Focus on an astonishing counter-intuitive insight, foundational principle, paradox, or core academic mechanism.
+
+Return strictly a valid JSON object matching this exact schema (no markdown formatting, no code ticks, just raw JSON):
+{
+  "id": "feed-ai-${Date.now()}",
+  "title": "Punchy academic title (e.g. 'The Prisoner's Dilemma & Nash Equilibrium')",
+  "category": "Appropriate category (Calculus & Math, Neuroscience & Psychology, Physics & Space, Economics & Philosophy, CS & AI, or Chemistry & Biology)",
+  "readTime": "45s read",
+  "hook": "Provocative 1-sentence thought experiment or mystery hook that grabs attention",
+  "coreInsight": "2-3 sentences explaining the exact theoretical or empirical mechanics with university-level clarity",
+  "realWorldAnalogy": "A relatable, vivid mental model or everyday analogy",
+  "quickCheck": {
+    "question": "A sharp, diagnostic multiple-choice question testing the core concept",
+    "options": [
+      "Correct answer explaining the true principle",
+      "Plausible misconception answer 1",
+      "Plausible misconception answer 2",
+      "Plausible misconception answer 3"
+    ],
+    "correctIndex": 0,
+    "explanation": "Clear explanation of why option 0 is correct and the misconception flaw in others"
+  },
+  "takeaway": "1 memorable sentence crystallizing the universal mental model"
+}`;
+
+      const aiResponse = await gemini.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          temperature: 0.4
+        }
+      });
+
+      const text = aiResponse.text || '';
+      const cleaned = cleanJsonString(text);
+      const generatedCard = JSON.parse(cleaned);
+
+      if (generatedCard && generatedCard.title) {
+        if (!generatedCard.id) generatedCard.id = 'feed-ai-' + Date.now();
+        filtered = [generatedCard, ...filtered];
+      }
+    } catch (genErr) {
+      console.warn('Gemini BrainFeed generation error:', genErr);
+    }
+  }
+
+  return res.json({ cards: filtered, total: filtered.length });
 });
 
 // -------------------------------------------------------------

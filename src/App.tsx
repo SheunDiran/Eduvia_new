@@ -15,7 +15,6 @@ import { OpportunitiesView } from './components/OpportunitiesView';
 import { SettingsView } from './components/SettingsView';
 import { FloatingEduviaAI } from './components/FloatingEduviaAI';
 import { EduviaAIFullscreen } from './components/EduviaAIFullscreen';
-import { BooksReaderView } from './components/BooksReaderView';
 import { BrainFeedView } from './components/BrainFeedView';
 import { PhotoSolverModal } from './components/PhotoSolverModal';
 
@@ -129,10 +128,6 @@ export default function App() {
               onSelectSubject={handleSelectSubject}
               onStartTimedTest={handleLaunchTimedTest}
             />
-          )}
-
-          {activeView === 'read' && (
-            <BooksReaderView user={user} />
           )}
 
           {activeView === 'brainfeed' && (

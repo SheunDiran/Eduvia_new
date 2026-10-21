@@ -1,6 +1,6 @@
 {
   "name": "Eduvia",
-  "description": "AI-powered study portal for school & university students with curated video playlists, global books reader, camera photo solver, and cognitive misconception diagnosis.",
+  "description": "AI-powered study portal for school & university students with curated curriculum, video playlists, photo homework solver, and verified global scholarships.",
   "requestFramePermissions": [
     "camera"
   ],

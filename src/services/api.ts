@@ -1343,8 +1343,14 @@ export async function getBookChapterSummary(params: {
 
 // ================= BRAINFEED MICRO-LEARNING =================
 
-export async function fetchBrainFeed(category?: string) {
-  const url = category && category !== 'All' ? `/api/ai/brainfeed?category=${encodeURIComponent(category)}` : '/api/ai/brainfeed';
+export async function fetchBrainFeed(category?: string, search?: string, generate?: boolean) {
+  const params = new URLSearchParams();
+  if (category && category !== 'All') params.append('category', category);
+  if (search && search.trim()) params.append('search', search.trim());
+  if (generate) params.append('generate', 'true');
+
+  const queryStr = params.toString();
+  const url = queryStr ? `/api/ai/brainfeed?${queryStr}` : '/api/ai/brainfeed';
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to load BrainFeed cards');
   return res.json();

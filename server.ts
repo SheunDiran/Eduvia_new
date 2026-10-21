@@ -1800,4 +1800,10 @@ async function startServer() {
   });
 }
 
-startServer();
+// Vercel imports the Express app as a serverless function. Local development
+// still starts the standalone server with `npm run dev` or `npm start`.
+export default app;
+
+if (!process.env.VERCEL) {
+  startServer();
+}

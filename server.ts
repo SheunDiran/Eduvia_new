@@ -28,7 +28,9 @@ const dbTestResults: Map<string, any[]> = new Map(); // userId -> test results
 const dbNotes: Map<string, any[]> = new Map(); // userId -> notes
 const dbTasks: Map<string, any[]> = new Map(); // userId -> tasks
 
-const DB_FILE_PATH = path.resolve(process.cwd(), '.eduvia_db.json');
+const DB_FILE_PATH = process.env.VERCEL
+  ? path.resolve('/tmp', '.eduvia_db.json')
+  : path.resolve(process.cwd(), '.eduvia_db.json');
 
 // Seed fallback tasks and notes for guest/unauthenticated requests
 const defaultGuestId = 'student-guest';

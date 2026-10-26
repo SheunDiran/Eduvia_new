@@ -17,6 +17,7 @@ import {
   Flame,
   Volume2
 } from 'lucide-react';
+import { PWAInstallButton } from './PWAInstallButton';
 import { GradeLevel, Subject, SubjectId, TaskItem, UserProfile } from '../types';
 import { getSubjectsForGrade } from '../data/subjects';
 import { GRADES } from '../data/grades';
@@ -160,6 +161,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Progressive Web App (PWA) Install Banner */}
+      <PWAInstallButton variant="banner" />
 
       {/* Flagship Hackathon Feature Showcase (2-Column Spotlight) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">

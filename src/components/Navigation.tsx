@@ -159,6 +159,9 @@ export const Sidebar: React.FC<NavigationProps> = ({
           </div>
         </div>
 
+        {/* Progressive Web App Install Button in Sidebar */}
+        <PWAInstallButton variant="card" className="w-full" />
+
         {/* Prompt Requirement: Add a Logout button visible in sidebar on every page */}
         <button
           type="button"
@@ -505,6 +508,10 @@ export const Navigation: React.FC<NavigationLayoutProps> = ({
                 <strong className="text-slate-800 dark:text-slate-200">{user.name}</strong>
                 <p className="text-[11px] truncate">{user.email}</p>
               </div>
+
+              {/* PWA mobile install action */}
+              <PWAInstallButton variant="card" className="w-full" />
+
               <button
                 type="button"
                 onClick={() => { setIsMobileMenuOpen(false); onLogout(); }}

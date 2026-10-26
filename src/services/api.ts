@@ -77,6 +77,19 @@ function saveLocalAccounts(accounts: RegisteredAccount[]) {
   }
 }
 
+// Safely parse JSON responses from server without throwing on HTML (e.g. Vercel SPA rewrites)
+export async function parseResponseJson(res: Response): Promise<any | null> {
+  try {
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return await res.json();
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // ================= AUTH =================
 
 export function getStoredUser(): UserProfile | null {
@@ -158,12 +171,10 @@ export async function loginDemoUser(type: 'highschool' | 'university' = 'highsch
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type })
     });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.user) {
-        setStoredUser(data.user, data.token, rememberMe);
-        return data.user;
-      }
+    const data = await parseResponseJson(res);
+    if (res.ok && data?.user) {
+      setStoredUser(data.user, data.token, rememberMe);
+      return data.user;
     }
   } catch (e) {
     console.warn('Demo login fetch failed, falling back to local demo profile:', e);
@@ -190,8 +201,8 @@ export async function loginUser(email: string, password: string, rememberMe = tr
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: normalizedEmail, password })
     });
-    const data = await res.json();
-    if (res.ok && data.user) {
+    const data = await parseResponseJson(res);
+    if (res.ok && data?.user) {
       const userProfile: UserProfile = {
         id: data.user.id,
         name: data.user.name,
@@ -203,8 +214,8 @@ export async function loginUser(email: string, password: string, rememberMe = tr
       setStoredUser(userProfile, data.token, rememberMe);
       return userProfile;
     }
-    // If backend gave invalid credentials error, check local registered accounts
-    if (!res.ok && data.error && !data.error.includes('fetch')) {
+    // If backend returned invalid credentials error, check local registered accounts before failing
+    if (data && !res.ok && data.error && !data.error.includes('fetch')) {
       const accounts = getLocalAccounts();
       const matched = accounts.find((a) => a.email.toLowerCase() === normalizedEmail && a.password === password);
       if (matched) {
@@ -221,8 +232,7 @@ export async function loginUser(email: string, password: string, rememberMe = tr
       throw new Error(data.error);
     }
   } catch (err: any) {
-    if (err?.message && !err.message.includes('fetch') && !err.message.includes('Network')) {
-      // Check local accounts
+    if (err?.message && !err.message.includes('fetch') && !err.message.includes('Network') && !err.message.includes('JSON')) {
       const accounts = getLocalAccounts();
       const matched = accounts.find((a) => a.email.toLowerCase() === normalizedEmail && a.password === password);
       if (matched) {
@@ -240,7 +250,7 @@ export async function loginUser(email: string, password: string, rememberMe = tr
     }
   }
 
-  // 2. Check local client accounts
+  // 2. Check local client database (localStorage) - 100% works on Vercel without a backend!
   const accounts = getLocalAccounts();
   const matched = accounts.find((a) => a.email.toLowerCase() === normalizedEmail && a.password === password);
   if (matched) {
@@ -281,8 +291,8 @@ export async function signupUser(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name.trim(), email: normalizedEmail, password, grade })
     });
-    const data = await res.json();
-    if (res.ok && data.user) {
+    const data = await parseResponseJson(res);
+    if (res.ok && data?.user) {
       serverProfile = {
         id: data.user.id,
         name: data.user.name,
@@ -292,11 +302,11 @@ export async function signupUser(
         avatarSeed: data.user.avatarSeed
       };
       serverToken = data.token;
-    } else if (!res.ok && data.error) {
+    } else if (data && !res.ok && data.error) {
       throw new Error(data.error);
     }
   } catch (err: any) {
-    if (err?.message && !err.message.includes('fetch')) {
+    if (err?.message && !err.message.includes('fetch') && !err.message.includes('JSON')) {
       throw err;
     }
   }
@@ -318,7 +328,6 @@ export async function signupUser(
     joinedAt: userProfile.joinedAt
   });
   saveLocalAccounts(accounts);
-
   setStoredUser(userProfile, serverToken, rememberMe);
   return userProfile;
 }
@@ -1021,12 +1030,10 @@ export function resetGradeProgress(userId: string, grade: GradeLevel): void {
 export async function fetchNotes(userId: string): Promise<NoteItem[]> {
   try {
     const res = await fetch(`/api/notes?userId=${encodeURIComponent(userId)}`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.notes) {
-        localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(data.notes));
-        return data.notes;
-      }
+    const data = await parseResponseJson(res);
+    if (res.ok && data?.notes) {
+      localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(data.notes));
+      return data.notes;
     }
   } catch (e) {
     console.warn(e);
@@ -1124,12 +1131,10 @@ export async function removeNote(id: string, userId: string): Promise<void> {
 export async function fetchTasks(userId: string): Promise<TaskItem[]> {
   try {
     const res = await fetch(`/api/tasks?userId=${encodeURIComponent(userId)}`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.tasks) {
-        localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(data.tasks));
-        return data.tasks;
-      }
+    const data = await parseResponseJson(res);
+    if (res.ok && data?.tasks) {
+      localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(data.tasks));
+      return data.tasks;
     }
   } catch (e) {
     console.warn(e);

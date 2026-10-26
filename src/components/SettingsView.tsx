@@ -11,8 +11,10 @@ import {
   Sun,
   Moon,
   RotateCcw,
-  AlertTriangle
+  AlertTriangle,
+  Download
 } from 'lucide-react';
+import { PWAInstallButton } from './PWAInstallButton';
 import { GradeLevel, UserProfile } from '../types';
 import { GRADES } from '../data/grades';
 import { resetGradeProgress, updateUserGrade } from '../services/api';
@@ -264,6 +266,23 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </span>
           )}
         </div>
+      </div>
+
+      {/* Progressive Web App (PWA) & Offline Access */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 sm:p-8 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Download className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <span>Progressive Web App (PWA) & Offline Mode</span>
+          </h3>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            Offline Ready
+          </span>
+        </div>
+        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          Install Eduvia directly onto your mobile home screen (iOS / Android) or PC desktop (Chrome / Edge / Safari). Enjoy distraction-free fullscreen study, instant offline revision, and native app speeds without any browser tabs.
+        </p>
+        <PWAInstallButton variant="banner" />
       </div>
 
       {/* Platform Information */}
